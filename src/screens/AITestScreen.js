@@ -1,6 +1,6 @@
 // src/screens/AITestScreen.js
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, ActivityIndicator, Image, ScrollView, Platform, Alert } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableOpacity , Image, ScrollView, Platform, Alert } from 'react-native';
 import { Text, Button, Card } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';

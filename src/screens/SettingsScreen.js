@@ -24,8 +24,8 @@ const STORAGE_KEYS = {
 };
 
 const SettingsScreen = ({ navigation }) => {
-  const [espIP, setEspIP] = useState('');
-  const [cameraIP, setCameraIP] = useState('');
+  const [espIP, setEspIP] = useState('10.248.244.165');
+  const [cameraIP, setCameraIP] = useState('10.248.244.99');
   const [manualIP, setManualIP] = useState('');
   const [manualCameraIP, setManualCameraIP] = useState('');
   const [autoConnect, setAutoConnect] = useState(false);
