@@ -6,7 +6,7 @@ export default function BottomNavBar({ activeTab, onTabPress }) {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: 'view-dashboard' },
     // { id: 'control', label: 'Control', icon: 'controller-classic' },
-    { id: 'aitest', label: 'AI Test', icon: 'brain' },
+    // { id: 'aitest', label: 'AI Test', icon: 'brain' },
     { id: 'history', label: 'History', icon: 'chart-bar' },
     { id: 'settings', label: 'Settings', icon: 'cog' },
   ];

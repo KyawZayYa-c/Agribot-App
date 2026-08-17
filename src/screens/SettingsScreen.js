@@ -635,7 +635,7 @@ const testCameraConnection = async (ip) => {
               ) : null}
 
               {/* Quick Connect for Camera */}
-              <View style={styles.quickConnectRow}>
+              {/* <View style={styles.quickConnectRow}>
                 {['10.248.244.166', '10.11.128.166'].map((ip) => (
                   <TouchableOpacity
                     key={ip}
@@ -649,7 +649,7 @@ const testCameraConnection = async (ip) => {
                     <Text style={[styles.quickButtonText, styles.cameraQuickButtonText]}>{ip}</Text>
                   </TouchableOpacity>
                 ))}
-              </View>
+              </View> */}
             </View>
 
             {/* Auto Connect Card */}
