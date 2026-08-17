@@ -12,6 +12,8 @@ import BottomNavBar from './src/components/BottomNavBar';
 import ChatDetailScreen from './src/screens/ChatDetailScreen';
 import FloatingAIButton from './src/components/FloatingAIButton';
 import AITestScreen from './src/screens/AITestScreen';
+import { LanguageProvider } from './src/context/LanguageContext';
+
 const theme = {
   ...MD3LightTheme,
   colors: {
@@ -30,20 +32,17 @@ export default function App() {
   // ✅ State for control params
   const [controlParams, setControlParams] = useState(null);
   const [showAITest, setShowAITest] = useState(false);
-const [aiTestImage, setAiTestImage] = useState(null);  // ✅ ပုံ data သိမ်းဖို့
+  const [aiTestImage, setAiTestImage] = useState(null);
 
-// ✅ AITestScreen ကို ဖွင့်မယ်
-const openAITest = (imageUri) => {
-  setAiTestImage(imageUri);
-  setShowAITest(true);
-};
+  const openAITest = (imageUri) => {
+    setAiTestImage(imageUri);
+    setShowAITest(true);
+  };
 
-// ✅ AITestScreen ကို ပိတ်မယ်
-const closeAITest = () => {
-  setShowAITest(false);
-  setAiTestImage(null);
-};
-  
+  const closeAITest = () => {
+    setShowAITest(false);
+    setAiTestImage(null);
+  };
 
   const openAIChat = (sessionId) => {
     setCurrentSessionId(sessionId);
@@ -77,11 +76,11 @@ const closeAITest = () => {
     }
 
     if (showAITest) {
-    return <AITestScreen 
-      onBack={closeAITest} 
-      initialImage={aiTestImage}  
-    />;
-  }
+      return <AITestScreen 
+        onBack={closeAITest} 
+        initialImage={aiTestImage}  
+      />;
+    }
 
     switch (currentTab) {
       case 'dashboard':
@@ -113,27 +112,35 @@ const closeAITest = () => {
     }
   };
 
+  // ✅ shouldShowBottomNav - selectedChat ရှိရင် မပြပါနဲ့
+  const shouldShowBottomNav = !showAIChat && 
+    currentTab !== 'control' && 
+    !selectedChat &&  // ✅ ဒါကို ထည့်ပါ
+    currentTab !== 'aitest';
+
+  // ✅ shouldShowAIFloatingButton - selectedChat ရှိရင် မပြပါနဲ့
   const shouldShowAIFloatingButton = !showAIChat && 
     currentTab !== 'control' && 
     currentTab !== 'aitest' &&
     currentTab !== 'settings' &&
-    currentTab !== 'history';
-
-  const shouldShowBottomNav = !showAIChat && currentTab !== 'control';
+    currentTab !== 'history' &&
+    !selectedChat;  // ✅ ဒါကို ထည့်ပါ
 
   return (
     <PaperProvider theme={theme}>
-      <View style={styles.container}>
-        {renderScreen()}
+      <LanguageProvider>
+        <View style={styles.container}>
+          {renderScreen()}
 
-        {shouldShowAIFloatingButton && (
-          <FloatingAIButton onPress={openAIChat} />
-        )}
+          {shouldShowAIFloatingButton && (
+            <FloatingAIButton onPress={openAIChat} />
+          )}
 
-        {shouldShowBottomNav && (
-          <BottomNavBar activeTab={currentTab} onTabPress={setCurrentTab} />
-        )}
-      </View>
+          {shouldShowBottomNav && (
+            <BottomNavBar activeTab={currentTab} onTabPress={setCurrentTab} />
+          )}
+        </View>
+      </LanguageProvider>
     </PaperProvider>
   );
 }

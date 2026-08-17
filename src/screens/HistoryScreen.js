@@ -133,11 +133,26 @@ export default function HistoryScreen({ onChatPress }) {
     day: 'numeric',
   });
 
+  // const handleChatPress = (chat) => {
+  //   if (onChatPress) {
+  //     onChatPress(chat);
+  //   }
+  // };
+
   const handleChatPress = (chat) => {
-    if (onChatPress) {
+  if (onChatPress) {
+    // ✅ Prediction data ပါရင် ပုံပါအောင်ပို့
+    if (chat.result && chat.image) {
+      onChatPress({
+        ...chat,
+        image: chat.image,
+        result: chat.result,
+      });
+    } else {
       onChatPress(chat);
     }
-  };
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -166,7 +181,7 @@ export default function HistoryScreen({ onChatPress }) {
                 activeTab="ai-predict"
                 filteredChats={aiPredictions}
                 loading={loading}
-                onChatPress={() => {}}
+                 onChatPress={handleChatPress}
                 onDeleteChat={handleDeletePrediction}
                 isPrediction={true}
               />

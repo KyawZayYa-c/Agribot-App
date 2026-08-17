@@ -143,118 +143,245 @@ export default function AITestScreen({ onBack, initialImage = null }) {
   // =============================================
   // ✅ Upload Function - Web + Mobile အတွက်
   // =============================================
-  const uploadAndPredict = async (fileOrUri) => {
-    // ✅ AbortController အသစ်ဖန်တီးပါ
-    abortControllerRef.current = new AbortController();
+  // const uploadAndPredict = async (fileOrUri) => {
+  //   // ✅ AbortController အသစ်ဖန်တီးပါ
+  //   abortControllerRef.current = new AbortController();
     
-    setLoading(true);
-    setResult(null);
-    setError(null);
-    setUploadProgress(0);
+  //   setLoading(true);
+  //   setResult(null);
+  //   setError(null);
+  //   setUploadProgress(0);
 
-    try {
-      const formData = new FormData();
+  //   try {
+  //     const formData = new FormData();
 
-      // ✅ Web အတွက် - File object
-      if (Platform.OS === 'web' && fileOrUri instanceof File) {
-        console.log('📤 Web: Uploading file directly');
-        formData.append('image', fileOrUri, fileOrUri.name);
-      } 
-      // ✅ Mobile အတွက် - URI ကို သုံးပါ (base64 လည်းပါ)
-      else if (typeof fileOrUri === 'string') {
-        // ✅ base64 data URI ဖြစ်နေရင်
-        if (fileOrUri.startsWith('data:image')) {
-          console.log('📤 Mobile: Uploading from base64 data');
-          const response = await fetch(fileOrUri);
-          const blob = await response.blob();
-          const filename = `capture_${Date.now()}.jpg`;
-          const file = new File([blob], filename, { type: 'image/jpeg' });
-          formData.append('image', file, filename);
-        } else {
-          // ✅ ပုံမှန် URI
-          const filename = fileOrUri.split('/').pop() || 'photo.jpg';
-          const match = /\.(\w+)$/.exec(filename);
-          const type = match ? `image/${match[1]}` : 'image/jpeg';
+  //     // ✅ Web အတွက် - File object
+  //     if (Platform.OS === 'web' && fileOrUri instanceof File) {
+  //       console.log('📤 Web: Uploading file directly');
+  //       formData.append('image', fileOrUri, fileOrUri.name);
+  //     } 
+  //     // ✅ Mobile အတွက် - URI ကို သုံးပါ (base64 လည်းပါ)
+  //     else if (typeof fileOrUri === 'string') {
+  //       // ✅ base64 data URI ဖြစ်နေရင်
+  //       if (fileOrUri.startsWith('data:image')) {
+  //         console.log('📤 Mobile: Uploading from base64 data');
+  //         const response = await fetch(fileOrUri);
+  //         const blob = await response.blob();
+  //         const filename = `capture_${Date.now()}.jpg`;
+  //         const file = new File([blob], filename, { type: 'image/jpeg' });
+  //         formData.append('image', file, filename);
+  //       } else {
+  //         // ✅ ပုံမှန် URI
+  //         const filename = fileOrUri.split('/').pop() || 'photo.jpg';
+  //         const match = /\.(\w+)$/.exec(filename);
+  //         const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-          console.log('📤 Mobile: Uploading from URI:', filename);
-          formData.append('image', {
-            uri: fileOrUri,
-            name: filename,
-            type: type,
-          });
-        }
-      } else {
-        throw new Error('Unsupported file format');
-      }
+  //         console.log('📤 Mobile: Uploading from URI:', filename);
+  //         formData.append('image', {
+  //           uri: fileOrUri,
+  //           name: filename,
+  //           type: type,
+  //         });
+  //       }
+  //     } else {
+  //       throw new Error('Unsupported file format');
+  //     }
 
-      console.log('📤 Sending request to:', `${BASE_URL}/predict`);
+  //     console.log('📤 Sending request to:', `${BASE_URL}/predict`);
 
-      const response = await axios({
-        method: 'POST',
-        url: `${BASE_URL}/predict`,
-        data: formData,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-        timeout: 60000,
-        signal: abortControllerRef.current.signal,
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress(percentCompleted);
-          console.log(`📤 Upload progress: ${percentCompleted}%`);
-        },
+  //     const response = await axios({
+  //       method: 'POST',
+  //       url: `${BASE_URL}/predict`,
+  //       data: formData,
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //       timeout: 60000,
+  //       signal: abortControllerRef.current.signal,
+  //       onUploadProgress: (progressEvent) => {
+  //         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+  //         setUploadProgress(percentCompleted);
+  //         console.log(`📤 Upload progress: ${percentCompleted}%`);
+  //       },
+  //     });
+
+  //     console.log('📡 Response status:', response.status);
+  //     console.log('📡 Response data:', response.data);
+
+  //     if (response.data && response.data.error) {
+  //       throw new Error(response.data.error);
+  //     }
+
+  //     setResult(response.data);
+  //     setIsServerReady(true);
+
+  //     // ✅ ပုံနဲ့အဖြေကို Firebase မှာ သိမ်းမယ်
+  //     if (fileOrUri && typeof fileOrUri === 'string' && fileOrUri.startsWith('data:image')) {
+  //       console.log('💾 Saving prediction to Firebase...');
+  //       const saveResult = await firebaseService.saveAIPrediction(
+  //         fileOrUri,  // base64 image
+  //         response.data  // prediction result
+  //       );
+  //       if (saveResult.success) {
+  //         console.log('✅ Prediction saved to Firebase:', saveResult.id);
+  //       } else {
+  //         console.log('❌ Failed to save prediction:', saveResult.error);
+  //       }
+  //     }
+
+  //   } catch (err) {
+  //     console.error('❌ Prediction Error:', err);
+      
+  //     // ✅ Cancel လုပ်လို့ဖြစ်ရင်
+  //     if (err.name === 'CanceledError' || err.message?.includes('canceled')) {
+  //       setError('Upload was cancelled');
+  //     } else {
+  //       let errorMessage = 'Python Backend သို့ ချိတ်ဆက်၍မရပါ။ Server နိုးထချိန် စောင့်ဆိုင်းပြီး ထပ်မံကြိုးစားပါ။';
+        
+  //       if (err.response) {
+  //         console.log('Response data:', err.response.data);
+  //         console.log('Response status:', err.response.status);
+  //         errorMessage = err.response.data?.error || errorMessage;
+  //       } else if (err.request) {
+  //         console.log('No response received');
+  //         errorMessage = 'Server မှ အဖြေမရရှိပါ။ ကျေးဇူးပြု၍ နောက်မှထပ်ကြိုးစားပါ။';
+  //       }
+        
+  //       setError(errorMessage);
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //     abortControllerRef.current = null;
+  //   }
+  // };
+  
+  // src/screens/AITestScreen.js
+
+const uploadAndPredict = async (fileOrUri) => {
+  abortControllerRef.current = new AbortController();
+  
+  setLoading(true);
+  setResult(null);
+  setError(null);
+  setUploadProgress(0);
+
+  try {
+    const formData = new FormData();
+
+    let imageBase64 = null;  // ✅ Firebase အတွက် base64 သိမ်းဖို့
+
+    // ✅ Web အတွက် - File object
+    if (Platform.OS === 'web' && fileOrUri instanceof File) {
+      console.log('📤 Web: Uploading file directly');
+      formData.append('image', fileOrUri, fileOrUri.name);
+      
+      // ✅ Web အတွက် base64 ပြောင်းပါ
+      const reader = new FileReader();
+      imageBase64 = await new Promise((resolve) => {
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(fileOrUri);
+      });
+    } 
+    // ✅ Mobile အတွက် - URI ကို သုံးပါ
+    else if (typeof fileOrUri === 'string') {
+      const filename = fileOrUri.split('/').pop() || 'photo.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+      console.log('📤 Mobile: Uploading from URI:', filename);
+      formData.append('image', {
+        uri: fileOrUri,
+        name: filename,
+        type: type,
       });
 
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response data:', response.data);
-
-      if (response.data && response.data.error) {
-        throw new Error(response.data.error);
+      // ✅ Mobile အတွက် base64 ပြောင်းပါ (URI ကနေ)
+      try {
+        const response = await fetch(fileOrUri);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        imageBase64 = await new Promise((resolve) => {
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+        console.log('✅ Image converted to base64 for Firebase');
+      } catch (err) {
+        console.log('⚠️ Could not convert to base64, skipping Firebase save');
       }
-
-      setResult(response.data);
-      setIsServerReady(true);
-
-      // ✅ ပုံနဲ့အဖြေကို Firebase မှာ သိမ်းမယ်
-      if (fileOrUri && typeof fileOrUri === 'string' && fileOrUri.startsWith('data:image')) {
-        console.log('💾 Saving prediction to Firebase...');
-        const saveResult = await firebaseService.saveAIPrediction(
-          fileOrUri,  // base64 image
-          response.data  // prediction result
-        );
-        if (saveResult.success) {
-          console.log('✅ Prediction saved to Firebase:', saveResult.id);
-        } else {
-          console.log('❌ Failed to save prediction:', saveResult.error);
-        }
-      }
-
-    } catch (err) {
-      console.error('❌ Prediction Error:', err);
-      
-      // ✅ Cancel လုပ်လို့ဖြစ်ရင်
-      if (err.name === 'CanceledError' || err.message?.includes('canceled')) {
-        setError('Upload was cancelled');
-      } else {
-        let errorMessage = 'Python Backend သို့ ချိတ်ဆက်၍မရပါ။ Server နိုးထချိန် စောင့်ဆိုင်းပြီး ထပ်မံကြိုးစားပါ။';
-        
-        if (err.response) {
-          console.log('Response data:', err.response.data);
-          console.log('Response status:', err.response.status);
-          errorMessage = err.response.data?.error || errorMessage;
-        } else if (err.request) {
-          console.log('No response received');
-          errorMessage = 'Server မှ အဖြေမရရှိပါ။ ကျေးဇူးပြု၍ နောက်မှထပ်ကြိုးစားပါ။';
-        }
-        
-        setError(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-      abortControllerRef.current = null;
+    } else {
+      throw new Error('Unsupported file format');
     }
-  };
+
+    console.log('📤 Sending request to:', `${BASE_URL}/predict`);
+
+    const response = await axios({
+      method: 'POST',
+      url: `${BASE_URL}/predict`,
+      data: formData,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 60000,
+      signal: abortControllerRef.current.signal,
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        setUploadProgress(percentCompleted);
+        console.log(`📤 Upload progress: ${percentCompleted}%`);
+      },
+    });
+
+    console.log('📡 Response status:', response.status);
+    console.log('📡 Response data:', response.data);
+
+    if (response.data && response.data.error) {
+      throw new Error(response.data.error);
+    }
+
+    setResult(response.data);
+    setIsServerReady(true);
+
+    // ✅ ပုံနဲ့အဖြေကို Firebase မှာ သိမ်းမယ် (base64 ရှိမှသာ)
+    if (imageBase64) {
+      console.log('💾 Saving prediction to Firebase...');
+      const saveResult = await firebaseService.saveAIPrediction(
+        imageBase64,  // base64 image
+        response.data  // prediction result
+      );
+      if (saveResult.success) {
+        console.log('✅ Prediction saved to Firebase:', saveResult.id);
+      } else {
+        console.log('❌ Failed to save prediction:', saveResult.error);
+      }
+    } else {
+      console.log('⚠️ No base64 image available, skipping Firebase save');
+    }
+
+  } catch (err) {
+    console.error('❌ Prediction Error:', err);
+    
+    if (err.name === 'CanceledError' || err.message?.includes('canceled')) {
+      setError('Upload was cancelled');
+    } else {
+      let errorMessage = 'Python Backend သို့ ချိတ်ဆက်၍မရပါ။ Server နိုးထချိန် စောင့်ဆိုင်းပြီး ထပ်မံကြိုးစားပါ။';
+      
+      if (err.response) {
+        console.log('Response data:', err.response.data);
+        console.log('Response status:', err.response.status);
+        errorMessage = err.response.data?.error || errorMessage;
+      } else if (err.request) {
+        console.log('No response received');
+        errorMessage = 'Server မှ အဖြေမရရှိပါ။ ကျေးဇူးပြု၍ နောက်မှထပ်ကြိုးစားပါ။';
+      }
+      
+      setError(errorMessage);
+    }
+  } finally {
+    setLoading(false);
+    abortControllerRef.current = null;
+  }
+};
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

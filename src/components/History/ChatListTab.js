@@ -8,7 +8,8 @@ import {
   ActivityIndicator,
   Modal,
   TouchableWithoutFeedback,
-  FlatList,  // ✅ FlatList ကို import ထည့်ပါ
+  FlatList,
+  Image,
 } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
@@ -137,18 +138,37 @@ export default function ChatListTab({
   // ✅ Render Item
   const renderItem = ({ item, index }) => {
     const data = getDisplayData(item);
+     const hasImage = isPrediction && data.image;
     
-    return (
-      <TouchableOpacity
-        key={item.id || index}
-        onPress={() => onChatPress && onChatPress(item)}
-        onLongPress={() => handleLongPress(item)}
-        activeOpacity={0.7}
-        delayLongPress={500}
-      >
-        <Card style={styles.glassCardSmall}>
-          <Card.Content style={styles.smallCardContent}>
-            {/* ✅ AI Prediction ဆိုရင် icon ပြောင်းမယ် */}
+     return (
+    <TouchableOpacity
+      key={item.id || index}
+      onPress={() => {
+        // ✅ Prediction ဆိုရင် ပုံနဲ့အဖြေကိုပြမယ်
+        if (isPrediction && hasImage) {
+          onChatPress && onChatPress({
+            ...item,
+            image: data.image,
+            result: item.result
+          });
+        } else {
+          onChatPress && onChatPress(item);
+        }
+      }}
+      onLongPress={() => handleLongPress(item)}
+      activeOpacity={0.7}
+      delayLongPress={500}
+    >
+      <Card style={styles.glassCardSmall}>
+        <Card.Content style={styles.smallCardContent}>
+          {/* ✅ Prediction ဆိုရင် ပုံသေးလေးပြမယ် */}
+          {isPrediction && hasImage ? (
+            <Image 
+              source={{ uri: data.image }} 
+              style={styles.thumbnailImage}
+              resizeMode="cover"
+            />
+          ) : (
             <View style={styles.iconCircle}>
               <Ionicons
                 name={isPrediction ? 'scan' : (data.sender === 'ai' ? 'hardware-chip' : 'person')}
@@ -156,22 +176,23 @@ export default function ChatListTab({
                 color={isPrediction ? '#8BC34A' : (data.sender === 'ai' ? '#8CE835' : '#4FC3F7')}
               />
             </View>
-            <View style={styles.chatTexts}>
-              <Text style={styles.chatMessage} numberOfLines={2}>
-                {data.displayText || 'No data'}
-              </Text>
-              <Text style={styles.chatTime}>
-                {isPrediction ? '🤖 AI Detection' : (data.sender === 'ai' ? '🤖 AI' : '🧑 You')}
-                {data.pairCount > 0 && ` · ${data.pairCount} Q&A`}
-                {data.count > 0 && !data.pairCount && ` · ${data.count} messages`}
-                {' · '}
-                {data.timestamp ? new Date(data.timestamp).toLocaleString() : 'Just now'}
-              </Text>
-            </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
-    );
+          )}
+          <View style={styles.chatTexts}>
+            <Text style={styles.chatMessage} numberOfLines={2}>
+              {data.displayText || 'No data'}
+            </Text>
+            <Text style={styles.chatTime}>
+              {isPrediction ? '🤖 AI Detection' : (data.sender === 'ai' ? '🤖 AI' : '🧑 You')}
+              {data.pairCount > 0 && ` · ${data.pairCount} Q&A`}
+              {data.count > 0 && !data.pairCount && ` · ${data.count} messages`}
+              {' · '}
+              {data.timestamp ? new Date(data.timestamp).toLocaleString() : 'Just now'}
+            </Text>
+          </View>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
+  );
   };
 
   // ✅ Delete လုပ်နေရင် loading ကိုမပြဘူး
@@ -291,6 +312,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     flex: 1,
   },
+  thumbnailImage: {
+  width: 50,
+  height: 50,
+  borderRadius: 8,
+  marginRight: 10,
+},
   chatMessage: {
     color: '#fff',
     fontSize: 13,

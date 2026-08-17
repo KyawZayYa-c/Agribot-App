@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   StatusBar,
   Platform,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -81,13 +82,15 @@ const AITextRenderer = ({ text }) => {
 export default function ChatDetailScreen({ chat, onBack }) {
   // ✅ Debug log
   useEffect(() => {
-    console.log('📊 ChatDetailScreen mounted with:', chat);
-    console.log('📊 Chat messages:', chat?.messages);
-    if (chat?.messages) {
-      console.log(`📊 Message count: ${chat.messages.length}`);
-      chat.messages.forEach((msg, i) => {
-        console.log(`  ${i+1}. ${msg.sender}: ${(msg.text || msg.message || '').substring(0, 30)}...`);
-      });
+    console.log('📊 ChatDetailScreen mounted');
+    console.log('📊 chat keys:', Object.keys(chat || {}));
+    console.log('📊 chat.image exists:', !!chat?.image);
+    console.log('📊 chat.image type:', typeof chat?.image);
+    console.log('📊 chat.image length:', chat?.image?.length);
+    console.log('📊 chat.result exists:', !!chat?.result);
+    
+    if (chat?.image) {
+      console.log('📊 image first 50 chars:', chat.image.substring(0, 50));
     }
   }, [chat]);
 
@@ -103,8 +106,22 @@ export default function ChatDetailScreen({ chat, onBack }) {
   // ✅ Get messages
   const messages = chat.messages || [];
   const exchangeCount = Math.ceil(messages.length / 2);
+  
+  // ================================================
+  // ✅ KEY FIX: hasImage ကို ပိုကောင်းအောင်စစ်ပါ
+  // ================================================
+  const hasImage = chat?.image && 
+    typeof chat.image === 'string' && 
+    chat.image.length > 100;
+  
+  // ✅ ပုံပါပြီး result ရှိမှသာ isPrediction ဖြစ်မယ်
+  const isPrediction = hasImage && chat?.result && 
+    (chat.result.class || chat.result.confidence);
 
-  // ✅ Convert to pairs
+  console.log('📊 Final hasImage:', hasImage);
+  console.log('📊 Final isPrediction:', isPrediction);
+
+  // ✅ Convert to pairs (for chat only)
   const getPairs = () => {
     const pairs = [];
     for (let i = 0; i < messages.length; i += 2) {
@@ -129,24 +146,56 @@ export default function ChatDetailScreen({ chat, onBack }) {
               <Ionicons name="arrow-back" size={24} color="#8CE835" />
             </TouchableOpacity>
             <Text style={styles.headerTitle} numberOfLines={1}>
-              💬 Conversation
+              {isPrediction ? '📸 AI Detection' : '💬 Conversation'}
             </Text>
             <View style={styles.placeholder} />
           </View>
 
           {/* Content */}
           <ScrollView contentContainerStyle={styles.content}>
-            {/* Session Info */}
-            <View style={styles.sessionInfo}>
-              <Text style={styles.sessionCount}>
-                💬 {exchangeCount} exchanges
-              </Text>
-              <Text style={styles.sessionTime}>
-                {chat.updatedAt ? new Date(chat.updatedAt).toLocaleString() : 'Just now'}
-              </Text>
-            </View>
+            
+            {/* ✅ Prediction Image - isPrediction မှသာပြမယ် */}
+            {isPrediction && hasImage ? (
+              <View style={styles.imageContainer}>
+                <Image 
+                  source={{ uri: chat.image }} 
+                  style={styles.fullImage}
+                  resizeMode="cover"
+                  onError={(e) => {
+                    console.log('❌ Image load error:', e.nativeEvent.error);
+                  }}
+                  onLoad={() => console.log('✅ Image loaded successfully!')}
+                />
+              </View>
+            ) : null}
+            
+            {/* ✅ Prediction Result - isPrediction မှသာပြမယ် */}
+            {isPrediction && chat?.result && (
+              <View style={styles.resultContainer}>
+                <Text style={styles.resultLabel}>🔬 Detection Result</Text>
+                <Text style={styles.resultText}>{chat.result.class}</Text>
+                <Text style={styles.confidenceText}>Confidence: {chat.result.confidence}</Text>
+                {chat.timestamp && (
+                  <Text style={styles.timeText}>
+                    📅 {new Date(chat.timestamp).toLocaleString()}
+                  </Text>
+                )}
+              </View>
+            )}
+            
+            {/* ✅ Session Info - isPrediction မဟုတ်မှသာပြမယ် */}
+            {!isPrediction && (
+              <View style={styles.sessionInfo}>
+                <Text style={styles.sessionCount}>
+                  💬 {exchangeCount} exchanges
+                </Text>
+                <Text style={styles.sessionTime}>
+                  {chat.updatedAt ? new Date(chat.updatedAt).toLocaleString() : 'Just now'}
+                </Text>
+              </View>
+            )}
 
-            {/* Messages */}
+            {/* ✅ Messages - အကုန်လုံးအတွက်ပြမယ် */}
             {pairs.map((pair, index) => (
               <View key={index} style={styles.conversationPair}>
                 {/* User Message */}
@@ -186,20 +235,13 @@ export default function ChatDetailScreen({ chat, onBack }) {
             ))}
           </ScrollView>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <TouchableOpacity style={styles.closeBtn} onPress={onBack}>
-              <Ionicons name="close-circle" size={28} color="#8CE835" />
-              <Text style={styles.closeText}>Close</Text>
-            </TouchableOpacity>
-          </View>
+         
         </View>
       </ImageBackground>
     </SafeAreaView>
   );
 }
 
-// Styles အကုန်လုံး မူလအတိုင်းထားပါ
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -249,6 +291,60 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
     paddingBottom: 80,
+  },
+  imageContainer: {
+    width: '100%',
+    aspectRatio: 1,
+    backgroundColor: '#0a0e17',
+    borderRadius: 16,
+    marginBottom: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 195, 74, 0.25)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  fullImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 16,
+  },
+  resultContainer: {
+    backgroundColor: 'rgba(3, 95, 16, 0.73)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 195, 74, 0.25)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  resultLabel: {
+    color: '#607D8B',
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  resultText: {
+    color: '#8BC34A',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  confidenceText: {
+    color: '#B0BEC5',
+    fontSize: 14,
+    marginTop: 4,
+  },
+  timeText: {
+    color: '#455A64',
+    fontSize: 12,
+    marginTop: 8,
   },
   sessionInfo: {
     flexDirection: 'row',
@@ -369,9 +465,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 8,
   },
-  aiMessageContainer: {
-    width: '100%',
-  },
   heading1Wrapper: {
     marginTop: 10,
     marginBottom: 6,
@@ -437,5 +530,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#FFFFFF',
     lineHeight: 22,
+  },
+  aiMessageContainer: {
+    width: '100%',
   },
 });

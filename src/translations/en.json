@@ -1,0 +1,104 @@
+{
+  "settings": {
+    "title": "⚙️ Settings",
+    "esp_connection": "🤖 ESP32 Connection",
+    "status": "Status:",
+    "connected": "✅ Connected",
+    "disconnected": "❌ Disconnected",
+    "current_ip": "Current IP:",
+    "manual_ip": "Manual IP Address",
+    "enter_ip": "Enter IP (e.g. 192.168.1.15)",
+    "save": "Save",
+    "refresh": "🔄 Refresh",
+    "scan": "🔍 Scan for ESP32",
+    "scanning": "Scanning..."
+  },
+  "camera": {
+    "title": "📷 Camera",
+    "status": "Status:",
+    "connected": "✅ Connected",
+    "disconnected": "❌ Disconnected",
+    "current_ip": "Current IP:",
+    "manual_ip": "Camera IP Address",
+    "enter_ip": "Enter Camera IP (e.g. 192.168.1.16)",
+    "save": "Save"
+  },
+  "auto_connect": {
+    "title": "🔄 Auto Connect",
+    "description": "Automatically connect to ESP32 when app starts"
+  },
+  "tips": {
+    "title": "💡 Quick Tips",
+    "tip1": "Make sure your phone and ESP32 are on the same WiFi network",
+    "tip2": "ESP32 IP address can be found in Serial Monitor",
+    "tip3": "You can also use \"agrirobot.local\" if MDNS is enabled"
+  },
+  "danger": {
+    "title": "⚠️ Danger Zone",
+    "clear": "🗑️ Clear All Settings"
+  },
+  "modal": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "clear": "Clear"
+  },
+   "ai_chat": {
+    "header_title": "Agri-AI Assistant",
+    "powered_by": "Powered by ",
+    "gemini": "Gemini",
+    "welcome_title": "မင်္ဂလာပါဗျာ 🙏",
+    "welcome_subtitle": "ကျွန်တော်ကတော့ စိုက်ပျိုးရေးဆိုင်ရာ ကိစ္စရပ်တွေကို အကောင်းဆုံး ကူညီဖြေကြားပေးမယ့်",
+    "welcome_subtitle_bold": "Agri-AI Assistant",
+    "welcome_hint": "အောက်က ကဏ္ဍခွဲလေးတွေကို ရွေးချယ်ပြီးဖြစ်စေ၊ သိလိုသမျှကို စာရိုက်၍ဖြစ်စေ လွတ်လပ်စွာ မေးမြန်းနိုင်ပါတယ်ဗျာ။",
+    "loading": "စဉ်းစားနေပါသည်...",
+    "disclaimer": "AI ရဲ့ အဖြေတွေက သတင်းအချက်အလက်အတွက်သာ ဖြစ်ပါတယ်",
+    "input_placeholder": "စိုက်ပျိုးရေးနဲ့ပတ်သက်တာမေးပါ...",
+    "quick_actions": {
+      "crop": "🌾 သီးနှံအကြံပြုချက်",
+      "disease": "🦠 ရောဂါလမ်းညွှန်",
+      "pest": "🐛 ပိုးမွှားကာကွယ်ရေး",
+      "fertilizer": "🌱 ဓာတ်မြေဩဇာလမ်းညွှန်",
+      "farming": "📖 စိုက်ပျိုးရေးလမ်းညွှန်",
+      "general": "❓ မေးခွန်းအားလုံး"
+    },
+    "placeholders": {
+      "crop": "ဘယ်မြေမှာ ဘာစိုက်ရမလဲ?",
+      "disease": "အရွက်ဝါနေတယ် ဘာလုပ်ရမလဲ?",
+      "pest": "စပါးပိုးကျနေတယ် ဘယ်လိုကုသမလဲ?",
+      "fertilizer": "မြေဩဇာ ဘယ်လိုရွေးချယ်ရမလဲ?",
+      "farming": "စပါး ဘယ်လိုစိုက်ရမလဲ?",
+      "general": "စိုက်ပျိုးရေးနဲ့ပတ်သက်တာမေးပါ..."
+    }
+  },
+  "ai_test": {
+    "title": "Fruit Classifier AI",
+    "subtitle": "Apple vs Banana Recognition",
+    "server_status_checking": "Server Status: Checking/Waking up...",
+    "server_status_ready": "Server Status: Ready (Online)",
+    "server_status_warming": "Server Status: Warming up background...",
+    "capturing_text": "📸 Capturing image from camera...",
+    "capturing_subtext": "Please wait while we capture the image",
+    "placeholder_text": "Select or take a photo",
+    "gallery": "Gallery",
+    "camera": "Camera",
+    "analyzing": "Analyzing Image...",
+    "server_waking_notice": "(If server is waking up, first attempt may take up to 30 seconds)",
+    "cancel": "⏹ Cancel",
+    "confidence": "Confidence:",
+    "go_back": "Go Back",
+    "permission_gallery": "Media Library permission is required to select images!",
+    "permission_camera": "Camera permission is required to take photos!",
+    "upload_cancelled": "Upload was cancelled",
+    "upload_cancelled_title": "⏹️ Cancelled",
+    "upload_cancelled_msg": "Image upload was cancelled",
+    "error_connection": "Cannot connect to Python Backend. Please wait for server to wake up and try again.",
+    "error_no_response": "No response from server. Please try again later.",
+    "error_capture_failed": "Capture failed. Please try again.",
+    "error_unsupported": "Unsupported file format"
+  }
+  
+}

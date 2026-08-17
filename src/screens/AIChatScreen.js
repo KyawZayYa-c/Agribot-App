@@ -18,10 +18,10 @@ import { Text, Avatar } from 'react-native-paper';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { callGeminiProxy } from '../services/geminiProxyService';
 import firebaseService from '../services/firebaseService';
-// ✅ react-native-keyboard-controller ကို import လုပ်ပါ
+import { useLanguage } from '../context/LanguageContext';
 import {
   KeyboardController,
-  KeyboardProvider,        // ✅ ဒီဟာကို ထည့်ပါ
+  KeyboardProvider,
   KeyboardAvoidingView,
   useKeyboardHandler,
 } from 'react-native-keyboard-controller';
@@ -97,6 +97,7 @@ const parseBoldText = (text) => {
 };
 
 export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -107,12 +108,12 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const quickActions = [
-    { icon: 'leaf', label: '🌾 သီးနှံအကြံပြုချက်', id: 'crop', placeholder: 'ဘယ်မြေမှာ ဘာစိုက်ရမလဲ?' },
-    { icon: 'bug', label: '🦠 ရောဂါလမ်းညွှန်', id: 'disease', placeholder: 'အရွက်ဝါနေတယ် ဘာလုပ်ရမလဲ?' },
-    { icon: 'shield-bug', label: '🐛 ပိုးမွှားကာကွယ်ရေး', id: 'pest', placeholder: 'စပါးပိုးကျနေတယ် ဘယ်လိုကုသမလဲ?' },
-    { icon: 'sprout', label: '🌱 ဓာတ်မြေဩဇာလမ်းညွှန်', id: 'fertilizer', placeholder: 'မြေဩဇာ ဘယ်လိုရွေးချယ်ရမလဲ?' },
-    { icon: 'book-open-variant', label: '📖 စိုက်ပျိုးရေးလမ်းညွှန်', id: 'farming', placeholder: 'စပါး ဘယ်လိုစိုက်ရမလဲ?' },
-    { icon: 'help-circle', label: '❓ မေးခွန်းအားလုံး', id: 'general', placeholder: 'စိုက်ပျိုးရေးနဲ့ပတ်သက်တာမေးပါ...' },
+    { icon: 'leaf', label: t('ai_chat.quick_actions.crop'), id: 'crop', placeholder: t('ai_chat.placeholders.crop') },
+    { icon: 'bug', label: t('ai_chat.quick_actions.disease'), id: 'disease', placeholder: t('ai_chat.placeholders.disease') },
+    { icon: 'shield-bug', label: t('ai_chat.quick_actions.pest'), id: 'pest', placeholder: t('ai_chat.placeholders.pest') },
+    { icon: 'sprout', label: t('ai_chat.quick_actions.fertilizer'), id: 'fertilizer', placeholder: t('ai_chat.placeholders.fertilizer') },
+    { icon: 'book-open-variant', label: t('ai_chat.quick_actions.farming'), id: 'farming', placeholder: t('ai_chat.placeholders.farming') },
+    { icon: 'help-circle', label: t('ai_chat.quick_actions.general'), id: 'general', placeholder: t('ai_chat.placeholders.general') },
   ];
 
   const scrollViewRef = useRef();
@@ -270,7 +271,6 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
     }
   };
 
-  // ✅ KeyboardProvider နဲ့ wrap လုပ်ပါ
   return (
     <KeyboardProvider>
       <View style={styles.container}>
@@ -285,10 +285,10 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
               <View style={styles.headerLeft}>
                 <Avatar.Icon size={36} icon="robot" backgroundColor="#8BC34A" color="#0B1E13" />
                 <View style={styles.headerTextContainer}>
-                  <Text style={styles.headerTitle}>Agri-AI Assistant</Text>
+                  <Text style={styles.headerTitle}>{t('ai_chat.header_title')}</Text>
                   <View style={styles.poweredByContainer}>
-                    <Text style={styles.poweredByText}>Powered by </Text>
-                    <Text style={styles.geminiText}>Gemini</Text>
+                    <Text style={styles.poweredByText}>{t('ai_chat.powered_by')}</Text>
+                    <Text style={styles.geminiText}>{t('ai_chat.gemini')}</Text>
                   </View>
                 </View>
               </View>
@@ -299,7 +299,6 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
 
             <View style={styles.headerBottomBar} />
 
-            {/* KeyboardAvoidingView */}
             <KeyboardAvoidingView
               style={{ flex: 1 }}
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -323,14 +322,16 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
                         <View style={styles.botIconCircle}>
                           <MaterialCommunityIcons name="robot" size={32} color="#CCFF90" />
                         </View>
-                        <Text style={styles.introTitle}>မင်္ဂလာပါဗျာ 🙏</Text>
+                        <Text style={styles.introTitle}>{t('ai_chat.welcome_title')}</Text>
                         <Text style={styles.introSubtitle}>
-                          ကျွန်တော်ကတော့ စိုက်ပျိုးရေးဆိုင်ရာ ကိစ္စရပ်တွေကို အကောင်းဆုံး ကူညီဖြေကြားပေးမယ့် {"\n"}
-                          <Text style={{ color: '#CCFF90', fontWeight: 'bold' }}>Agri-AI Assistant</Text> ဖြစ်ပါတယ်ခင်ဗျာ။
+                          {t('ai_chat.welcome_subtitle')}{" "}
+                          <Text style={{ color: '#CCFF90', fontWeight: 'bold' }}>
+                            {t('ai_chat.welcome_subtitle_bold')}
+                          </Text>
                         </Text>
                         <View style={styles.introDivider} />
                         <Text style={styles.introHint}>
-                          အောက်က ကဏ္ဍခွဲလေးတွေကို ရွေးချယ်ပြီးဖြစ်စေ၊ သိလိုသမျှကို စာရိုက်၍ဖြစ်စေ လွတ်လပ်စွာ မေးမြန်းနိုင်ပါတယ်ဗျာ။
+                          {t('ai_chat.welcome_hint')}
                         </Text>
                       </View>
                     </View>
@@ -363,7 +364,7 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
                   {isLoading && (
                     <View style={styles.loadingContainer}>
                       <ActivityIndicator size="small" color="#8BC34A" />
-                      <Text style={styles.loadingText}>စဉ်းစားနေပါသည်...</Text>
+                      <Text style={styles.loadingText}>{t('ai_chat.loading')}</Text>
                     </View>
                   )}
                 </ScrollView>
@@ -429,7 +430,10 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
                     <TextInput
                       ref={inputRef}
                       style={styles.input}
-                      placeholder={selectedFeature ? quickActions.find(a => a.id === selectedFeature)?.placeholder : "စိုက်ပျိုးရေးနဲ့ပတ်သက်တာမေးပါ..."}
+                      placeholder={selectedFeature 
+                        ? quickActions.find(a => a.id === selectedFeature)?.placeholder 
+                        : t('ai_chat.input_placeholder')
+                      }
                       placeholderTextColor="#AEDB9F"
                       value={message}
                       onChangeText={setMessage}
@@ -459,7 +463,7 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
                   </View>
 
                   <Text style={styles.disclaimer}>
-                    AI ရဲ့ အဖြေတွေက သတင်းအချက်အလက်အတွက်သာ ဖြစ်ပါတယ်
+                    {t('ai_chat.disclaimer')}
                   </Text>
                 </View>
               </View>
@@ -472,7 +476,6 @@ export default function AIChatScreen({ onBack, sessionId: initialSessionId }) {
 }
 
 const styles = StyleSheet.create({
-  // ... styles အကုန်လုံး အတူတူပါ ...
   container: {
     flex: 1,
   },
