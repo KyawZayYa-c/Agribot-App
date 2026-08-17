@@ -32,6 +32,12 @@
     "plugins": [
       "react-native-fast-tflite",
       "expo-asset"
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/4306b3f6-6109-4162-989b-2fc0138cf982"
+    }
   }
 }
