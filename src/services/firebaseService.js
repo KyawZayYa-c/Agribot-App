@@ -1,7 +1,7 @@
 // services/firebaseService.js
 import { db } from '../lib/firebase';
 import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
+// import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'react-native';
 import esp32Service from './esp32Service'; 
 import { 
@@ -9,6 +9,17 @@ import {
 } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+let MediaLibrary = null;
+
+// ✅ Web မဟုတ်ရင်မှ import လုပ်ပါ
+if (Platform.OS !== 'web') {
+  try {
+    MediaLibrary = require('expo-media-library');
+    console.log('✅ MediaLibrary loaded successfully');
+  } catch (e) {
+    console.log('⚠️ MediaLibrary not available on this platform');
+  }
+}
 
 class FirebaseService {
   constructor() {
