@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "AgriBot",
+    "slug": "AgriBot",
+    "scheme": "agribot",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2e7d32"
+    },
+    "android": {
+      "icon": "./assets/icon.png",
+      "package": "com.zayya4281.AgriBot",
+      "ndkVersion": "26.1.10909125",
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4306b3f6-6109-4162-989b-2fc0138cf982"
+      }
+    },
+    "plugins": [
+      "react-native-fast-tflite",
+      "expo-asset"
+    ]
+  }
+}
