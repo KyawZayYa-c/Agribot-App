@@ -18,7 +18,6 @@
     "android": {
       "icon": "./assets/icon.png",
       "package": "com.zayya4281.AgriBot",
-      "ndkVersion": "26.1.10909125",
       "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
