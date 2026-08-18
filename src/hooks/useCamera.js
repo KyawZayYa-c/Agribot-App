@@ -7,15 +7,14 @@ export const useCamera = () => {
   const [videoError, setVideoError] = useState(false);
   const [isVideoVisible, setIsVideoVisible] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
-  const [videoStreamUrl, setVideoStreamUrl] = useState(null); // ✅ ထည့်ပါ
+  const [videoStreamUrl, setVideoStreamUrl] = useState(null);
   
-  // Servo angles state
   const [panAngle, setPanAngle] = useState(90);
   const [tiltAngle, setTiltAngle] = useState(90);
   
   const checkIntervalRef = useRef(null);
 
-  // ===== Camera Command Handler =====
+  // ===== Camera Command Handler - FIXED =====
   const handleCameraCommand = useCallback(async (direction) => {
     console.log(`📷 Camera direction: ${direction}`);
     
@@ -26,21 +25,36 @@ export const useCamera = () => {
       
       switch (direction) {
         case 'up':
-          newTilt = Math.min(170, tiltAngle + 10);
-          if (newTilt !== tiltAngle) {
-            console.log(`📷 Tilt up: ${newTilt}°`);
-            const result = await esp32Service.setTiltAngle(newTilt);
+          // ⚠️ FIX: up ဆိုရင် pan left သွားရမယ်
+          newPan = Math.max(0, panAngle - 10);
+          if (newPan !== panAngle) {
+            console.log(`📷 Up → Pan left: ${newPan}°`);
+            const result = await esp32Service.setPanAngle(newPan);
             if (result.success) {
-              setTiltAngle(newTilt);
+              setPanAngle(newPan);
               commandSent = true;
             }
           }
           break;
           
         case 'down':
-          newTilt = Math.max(10, tiltAngle - 10);
+          // ⚠️ FIX: down ဆိုရင် pan right သွားရမယ်
+          newPan = Math.min(180, panAngle + 10);
+          if (newPan !== panAngle) {
+            console.log(`📷 Down → Pan right: ${newPan}°`);
+            const result = await esp32Service.setPanAngle(newPan);
+            if (result.success) {
+              setPanAngle(newPan);
+              commandSent = true;
+            }
+          }
+          break;
+          
+        case 'left':
+          // ⚠️ FIX: left ဆိုရင် tilt up သွားရမယ်
+          newTilt = Math.min(170, tiltAngle + 10);
           if (newTilt !== tiltAngle) {
-            console.log(`📷 Tilt down: ${newTilt}°`);
+            console.log(`📷 Left → Tilt up: ${newTilt}°`);
             const result = await esp32Service.setTiltAngle(newTilt);
             if (result.success) {
               setTiltAngle(newTilt);
@@ -49,25 +63,14 @@ export const useCamera = () => {
           }
           break;
           
-        case 'left':
-          newPan = Math.max(0, panAngle - 10);
-          if (newPan !== panAngle) {
-            console.log(`📷 Pan left: ${newPan}°`);
-            const result = await esp32Service.setPanAngle(newPan);
-            if (result.success) {
-              setPanAngle(newPan);
-              commandSent = true;
-            }
-          }
-          break;
-          
         case 'right':
-          newPan = Math.min(180, panAngle + 10);
-          if (newPan !== panAngle) {
-            console.log(`📷 Pan right: ${newPan}°`);
-            const result = await esp32Service.setPanAngle(newPan);
+          // ⚠️ FIX: right ဆိုရင် tilt down သွားရမယ်
+          newTilt = Math.max(10, tiltAngle - 10);
+          if (newTilt !== tiltAngle) {
+            console.log(`📷 Right → Tilt down: ${newTilt}°`);
+            const result = await esp32Service.setTiltAngle(newTilt);
             if (result.success) {
-              setPanAngle(newPan);
+              setTiltAngle(newTilt);
               commandSent = true;
             }
           }
@@ -90,63 +93,55 @@ export const useCamera = () => {
     }
   }, [panAngle, tiltAngle]);
 
-// hooks/useCamera.js
-
-// ===== Get Camera Stream URL =====
-const getStreamUrl = useCallback(async () => {
-  try {
-    console.log('📷 Getting camera stream URL...');
-    
-    // ✅ async function ကို ခေါ်ပါ
-    const url = await esp32Service.getCameraStreamURL();
-    console.log('📷 Camera Stream URL result:', url);
-    
-    if (url) {
-      setVideoStreamUrl(url);
-      setVideoError(false);
-      console.log('✅ Camera stream URL set successfully');
-      return url;
-    } else {
-      console.log('⚠️ No Camera IP found - please set in Settings');
+  // ===== Get Camera Stream URL =====
+  const getStreamUrl = useCallback(async () => {
+    try {
+      console.log('📷 Getting camera stream URL...');
+      const url = await esp32Service.getCameraStreamURL();
+      console.log('📷 Camera Stream URL result:', url);
+      
+      if (url) {
+        setVideoStreamUrl(url);
+        setVideoError(false);
+        console.log('✅ Camera stream URL set successfully');
+        return url;
+      } else {
+        console.log('⚠️ No Camera IP found - please set in Settings');
+        setVideoError(true);
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Error getting stream URL:', error);
       setVideoError(true);
       return null;
     }
-  } catch (error) {
-    console.error('❌ Error getting stream URL:', error);
-    setVideoError(true);
-    return null;
-  }
-}, []);
+  }, []);
 
-// ===== Check Connection =====
-const checkConnection = useCallback(async () => {
-  try {
-    console.log('🔍 Checking ESP32 connection...');
-    
-    // ✅ ESP32 Control ကို စစ်ပါ
-    const result = await esp32Service.testConnection();
-    console.log('📊 Connection result:', result.success);
-    
-    if (result.success) {
-      setIsConnected(true);
-      setVideoError(false);
-      console.log('✅ ESP32 connected for camera');
+  // ===== Check Connection =====
+  const checkConnection = useCallback(async () => {
+    try {
+      console.log('🔍 Checking ESP32 connection...');
+      const result = await esp32Service.testConnection();
+      console.log('📊 Connection result:', result.success);
       
-      // ✅ Camera Stream URL ကို ယူပါ
-      await getStreamUrl();
-    } else {
+      if (result.success) {
+        setIsConnected(true);
+        setVideoError(false);
+        console.log('✅ ESP32 connected for camera');
+        await getStreamUrl();
+      } else {
+        setIsConnected(false);
+        setVideoError(true);
+        console.log('❌ ESP32 not connected');
+      }
+    } catch (error) {
       setIsConnected(false);
       setVideoError(true);
-      console.log('❌ ESP32 not connected');
+      console.log('❌ Connection check failed:', error.message);
+    } finally {
+      setIsVideoLoading(false);
     }
-  } catch (error) {
-    setIsConnected(false);
-    setVideoError(true);
-    console.log('❌ Connection check failed:', error.message);
-  } finally {
-    setIsVideoLoading(false);
-  }
-}, [getStreamUrl]);
+  }, [getStreamUrl]);
 
   const resetServos = useCallback(async () => {
     console.log('🔄 Resetting servos to home position...');
@@ -201,7 +196,7 @@ const checkConnection = useCallback(async () => {
     isConnected,
     panAngle,
     tiltAngle,
-    videoStreamUrl,  // ✅ ပြန်ပေးပါ
+    videoStreamUrl,
     resetServos,
     handleCameraCommand,
     reloadVideo,
