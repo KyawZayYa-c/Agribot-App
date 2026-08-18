@@ -25,7 +25,7 @@ export default function DashboardScreen({ onNavigate }) {
     day: 'numeric',
   });
 
-  // ✅ Only show full loading on first load
+  // ✅ Show loading only on first load
   if (loading && isConnecting) {
     return <LoadingIndicator message="Loading Dashboard..." />;
   }
@@ -39,6 +39,13 @@ export default function DashboardScreen({ onNavigate }) {
             showsVerticalScrollIndicator={false}
           >
             <Text style={styles.pageTitle}>🚜 Dashboard</Text>
+
+            {/* Show error if any (but don't crash) */}
+            {error && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>⚠️ {error}</Text>
+              </View>
+            )}
 
             {/* Connection Status */}
             <Text style={styles.sectionTitle}>● Connection Status</Text>
@@ -108,5 +115,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FFFFFF',
+  },
+  errorContainer: {
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.3)',
+  },
+  errorText: {
+    color: '#FF6B6B',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

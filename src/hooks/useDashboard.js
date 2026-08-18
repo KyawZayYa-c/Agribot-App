@@ -25,62 +25,100 @@ export const useDashboard = () => {
   
   const initializedRef = useRef(false);
   const refreshIntervalRef = useRef(null);
+  const isMountedRef = useRef(true);
 
   // ===== Fetch today's work time from Firebase =====
   const fetchTodayWorkTime = useCallback(async () => {
     try {
       const result = await firebaseService.getTodayWorkTime();
-      if (result.success) {
+      if (result && result.success) {
         setTodayWorkTime(result.data);
         setTelemetry(prev => ({
           ...prev,
-          workingTime: result.data.formatted,
+          workingTime: result.data.formatted || '0h 0m',
         }));
         console.log(`✅ Today's work time: ${result.data.formatted}`);
       }
     } catch (error) {
       console.error('❌ Error fetching today work time:', error);
+      // Don't set error here - it's not critical
     }
   }, []);
 
   // ===== Fetch data from ESP32 =====
   const fetchDashboardData = useCallback(async () => {
+    if (!isMountedRef.current) return;
+    
     if (!isConnected) {
       console.log('⏭️ Skipping fetch - not connected');
       return;
     }
 
     try {
-      const batteryResult = await esp32Service.getBatteryStatus();
-      if (batteryResult.success) {
-        setTelemetry(prev => ({
-          ...prev,
-          battery: batteryResult.data.percentage || 0,
-        }));
-        setErrorCount(0);
+      // ✅ Check if service methods exist before calling
+      let batterySuccess = false;
+      let statusSuccess = false;
+      
+      // Get battery status safely
+      if (typeof esp32Service.getBatteryStatus === 'function') {
+        try {
+          const batteryResult = await esp32Service.getBatteryStatus();
+          if (batteryResult && batteryResult.success) {
+            setTelemetry(prev => ({
+              ...prev,
+              battery: batteryResult.data?.percentage || 0,
+            }));
+            batterySuccess = true;
+            setErrorCount(0);
+          }
+        } catch (batteryErr) {
+          console.warn('⚠️ Battery fetch failed:', batteryErr.message);
+        }
       } else {
-        setErrorCount(prev => prev + 1);
+        console.warn('⚠️ getBatteryStatus method not available');
       }
-
-      const statusResult = await esp32Service.getStatus();
-      if (statusResult.success) {
-        setIsConnected(true);
-        setError(null);
-        setErrorCount(0);
+      
+      // Get status safely
+      if (typeof esp32Service.getStatus === 'function') {
+        try {
+          const statusResult = await esp32Service.getStatus();
+          if (statusResult && statusResult.success) {
+            setIsConnected(true);
+            setError(null);
+            setErrorCount(0);
+            statusSuccess = true;
+          } else {
+            // Only increment error count if we were previously connected
+            setErrorCount(prev => prev + 1);
+            if (errorCount >= 3) {
+              setError('ESP32 not connected. Please check Settings.');
+            }
+          }
+        } catch (statusErr) {
+          console.warn('⚠️ Status fetch failed:', statusErr.message);
+          setErrorCount(prev => prev + 1);
+          if (errorCount >= 3) {
+            setError('Cannot connect to ESP32. Please check connection.');
+          }
+        }
       } else {
-        setIsConnected(false);
-        setErrorCount(prev => prev + 1);
-        if (errorCount >= 3) {
-          setError('ESP32 not connected. Please check Settings.');
+        console.warn('⚠️ getStatus method not available');
+        // If method doesn't exist, assume connected if we were before
+        if (isConnected) {
+          statusSuccess = true;
         }
       }
 
-      await fetchTodayWorkTime();
+      // Only fetch work time if we have connection
+      if (batterySuccess || statusSuccess || isConnected) {
+        await fetchTodayWorkTime();
+      }
 
     } catch (err) {
-      console.error('Fetch error:', err);
+      console.error('❌ Fetch error:', err);
+      // Don't set error state for every failure - only after multiple attempts
       setErrorCount(prev => prev + 1);
-      if (errorCount >= 3) {
+      if (errorCount >= 5) {
         setError('Cannot connect to ESP32. Please check connection.');
       }
     }
@@ -93,6 +131,8 @@ export const useDashboard = () => {
       return;
     }
     
+    if (!isMountedRef.current) return;
+    
     setLoading(true);
     setError(null);
     setErrorCount(0);
@@ -100,31 +140,55 @@ export const useDashboard = () => {
     
     console.log('🔍 Initializing Dashboard...');
     
+    // Try to fetch work time even without ESP32 connection
     await fetchTodayWorkTime();
     
-    const savedIP = await esp32Service.getSavedIP();
-    if (!savedIP) {
-      console.log('⚠️ No saved IP found');
+    try {
+      const savedIP = await esp32Service.getSavedIP();
+      if (!savedIP) {
+        console.log('⚠️ No saved IP found');
+        setIsConnected(false);
+        setError('Please set ESP32 IP in Settings');
+        setLoading(false);
+        setIsConnecting(false);
+        setIsInitialized(true);
+        initializedRef.current = true;
+        return;
+      }
+      
+      console.log(`📡 Connecting to ${savedIP}...`);
+      
+      // ✅ Check if autoConnect exists
+      let result = { success: false, error: 'Method not available' };
+      if (typeof esp32Service.autoConnect === 'function') {
+        result = await esp32Service.autoConnect();
+      } else {
+        console.warn('⚠️ autoConnect method not available');
+        // If autoConnect doesn't exist, try testConnection
+        if (typeof esp32Service.testConnection === 'function') {
+          const testResult = await esp32Service.testConnection();
+          result = testResult;
+        } else {
+          // If no connection methods available, assume not connected
+          setIsConnected(false);
+          setError('ESP32 service not properly initialized');
+        }
+      }
+      
+      if (result && result.success) {
+        console.log('✅ Connected to ESP32');
+        setIsConnected(true);
+        await fetchDashboardData();
+      } else {
+        console.log('❌ Connection failed:', result?.error || 'Unknown error');
+        setIsConnected(false);
+        setError(result?.error || 'Failed to connect to ESP32');
+      }
+      
+    } catch (error) {
+      console.error('❌ Init error:', error);
       setIsConnected(false);
-      setError('Please set ESP32 IP in Settings');
-      setLoading(false);
-      setIsConnecting(false);
-      setIsInitialized(true);
-      initializedRef.current = true;
-      return;
-    }
-    
-    console.log(`📡 Connecting to ${savedIP}...`);
-    const result = await esp32Service.autoConnect();
-    
-    if (result.success) {
-      console.log('✅ Connected to ESP32');
-      setIsConnected(true);
-      await fetchDashboardData();
-    } else {
-      console.log('❌ Connection failed:', result.error);
-      setIsConnected(false);
-      setError(result.error || 'Failed to connect to ESP32');
+      setError('Failed to initialize connection');
     }
     
     setLoading(false);
@@ -135,17 +199,22 @@ export const useDashboard = () => {
 
   // ===== ✅ Auto initialize on mount =====
   useEffect(() => {
+    isMountedRef.current = true;
     initializeDashboard();
     
     return () => {
       console.log('🧹 Cleaning up useDashboard...');
+      isMountedRef.current = false;
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
         refreshIntervalRef.current = null;
       }
-      esp32Service.disconnect();
+      // ✅ Only disconnect if method exists
+      if (typeof esp32Service.disconnect === 'function') {
+        esp32Service.disconnect();
+      }
     };
-  }, [initializeDashboard]); // ✅ ဒီမှာ initializeDashboard ကိုခေါ်
+  }, [initializeDashboard]);
 
   // ===== Auto refresh every 30 seconds =====
   useEffect(() => {
