@@ -405,74 +405,195 @@ const testCameraConnection = async (ip) => {
   // ================= QUICK CONNECT BUTTONS =================
   const quickIPs = ['10.248.244.165', '10.11.128.165'];
 
-  const handleQuickConnect = async (ip) => {
-    console.log(`📡 Quick connect to: ${ip}`);
-    setManualIP(ip);
-    setIsLoading(true);
-    try {
-      const connected = await testConnection(ip);
-      if (connected) {
-        await AsyncStorage.setItem(STORAGE_KEYS.ESP_IP, ip);
-        setEspIP(ip);
-        setIsConnected(true);
-        console.log('✅ Quick connect successful!');
-        showModal('Success', `✅ Connected to ESP32 at ${ip}`, 'success');
-      } else {
-        showModal('Connection Failed', `Cannot connect to ${ip}`, 'error');
-      }
-    } catch (error) {
-      showModal('Error', error.message, 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleQuickConnect = async (ip) => {
+  //   console.log(`📡 Quick connect to: ${ip}`);
+  //   setManualIP(ip);
+  //   setIsLoading(true);
+  //   try {
+  //     const connected = await testConnection(ip);
+  //     if (connected) {
+  //       await AsyncStorage.setItem(STORAGE_KEYS.ESP_IP, ip);
+  //       setEspIP(ip);
+  //       setIsConnected(true);
+  //       console.log('✅ Quick connect successful!');
+  //       showModal('Success', `✅ Connected to ESP32 at ${ip}`, 'success');
+  //     } else {
+  //       showModal('Connection Failed', `Cannot connect to ${ip}`, 'error');
+  //     }
+  //   } catch (error) {
+  //     showModal('Error', error.message, 'error');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // ================= SAVE IP =================
-  const handleSaveIP = async () => {
-    console.log('📝 Manual IP input:', manualIP);
+  // const handleSaveIP = async () => {
+  //   console.log('📝 Manual IP input:', manualIP);
     
-    if (!manualIP) {
-      showModal('Error', 'Please enter an IP address', 'error');
-      return;
-    }
+  //   if (!manualIP) {
+  //     showModal('Error', 'Please enter an IP address', 'error');
+  //     return;
+  //   }
 
-    if (!manualIP.match(/^(\d{1,3}\.){3}\d{1,3}$/)) {
-      showModal('Error', 'Invalid IP address format', 'error');
-      return;
-    }
+  //   if (!manualIP.match(/^(\d{1,3}\.){3}\d{1,3}$/)) {
+  //     showModal('Error', 'Invalid IP address format', 'error');
+  //     return;
+  //   }
 
-    console.log('✅ IP format valid:', manualIP);
-    setIsLoading(true);
-    setError('');
+  //   console.log('✅ IP format valid:', manualIP);
+  //   setIsLoading(true);
+  //   setError('');
 
-    try {
-      console.log(`🔄 Testing connection to ${manualIP}...`);
-      const connected = await testConnection(manualIP);
-      console.log(`📊 Connection result: ${connected ? 'SUCCESS' : 'FAILED'}`);
+  //   try {
+  //     console.log(`🔄 Testing connection to ${manualIP}...`);
+  //     const connected = await testConnection(manualIP);
+  //     console.log(`📊 Connection result: ${connected ? 'SUCCESS' : 'FAILED'}`);
       
-      if (connected) {
-        await AsyncStorage.setItem(STORAGE_KEYS.ESP_IP, manualIP);
-        setEspIP(manualIP);
-        setIsConnected(true);
-        console.log('✅ IP saved successfully!');
-        showModal('Success', `Connected to ESP32 at ${manualIP}`, 'success');
-      } else {
-        setError('Cannot connect to ESP32 at this IP');
-        console.log('❌ Failed to connect to ESP32');
-        showModal(
-          'Connection Failed',
-          'No ESP32 found at this IP address\n\nMake sure:\n• ESP32 is powered on\n• Same WiFi network\n• IP address is correct',
-          'error'
-        );
-      }
-    } catch (error) {
-      console.log('❌ Save IP error:', error.message);
-      setError(error.message);
-      showModal('Error', 'Failed to connect', 'error');
-    } finally {
-      setIsLoading(false);
+  //     if (connected) {
+  //       await AsyncStorage.setItem(STORAGE_KEYS.ESP_IP, manualIP);
+  //       setEspIP(manualIP);
+  //       setIsConnected(true);
+  //       console.log('✅ IP saved successfully!');
+  //       showModal('Success', `Connected to ESP32 at ${manualIP}`, 'success');
+  //     } else {
+  //       setError('Cannot connect to ESP32 at this IP');
+  //       console.log('❌ Failed to connect to ESP32');
+  //       showModal(
+  //         'Connection Failed',
+  //         'No ESP32 found at this IP address\n\nMake sure:\n• ESP32 is powered on\n• Same WiFi network\n• IP address is correct',
+  //         'error'
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.log('❌ Save IP error:', error.message);
+  //     setError(error.message);
+  //     showModal('Error', 'Failed to connect', 'error');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
+  const handleQuickConnect = async (ip) => {
+  console.log(`📡 Quick connect to: ${ip}`);
+
+  setManualIP(ip);
+  setIsLoading(true);
+
+  try {
+    const connected = await testConnection(ip);
+
+    if (connected) {
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.ESP_IP,
+        ip
+      );
+
+      setEspIP(ip);
+      setIsConnected(true);
+
+      console.log('✅ Quick connect successful!');
+
+      showModal(
+        'Success',
+        `Connected to ESP32 at ${ip}`,
+        'success'
+      );
     }
-  };
+
+    // ❗ false ဖြစ်ရင် testConnection()
+    // က detailed Modal ပြပြီးသား
+
+  } catch (error) {
+
+    showModal(
+      'Error',
+      error?.message || 'Failed to connect',
+      'error'
+    );
+
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  const handleSaveIP = async () => {
+  console.log('📝 Manual IP input:', manualIP);
+
+  if (!manualIP) {
+    showModal(
+      'Error',
+      'Please enter an IP address',
+      'error'
+    );
+    return;
+  }
+
+  if (!manualIP.match(/^(\d{1,3}\.){3}\d{1,3}$/)) {
+    showModal(
+      'Error',
+      'Invalid IP address format',
+      'error'
+    );
+    return;
+  }
+
+  console.log('✅ IP format valid:', manualIP);
+
+  setIsLoading(true);
+  setError('');
+
+  try {
+    console.log(`🔄 Testing connection to ${manualIP}...`);
+
+    const connected = await testConnection(manualIP);
+
+    console.log(
+      `📊 Connection result: ${connected ? 'SUCCESS' : 'FAILED'}`
+    );
+
+    if (connected) {
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.ESP_IP,
+        manualIP
+      );
+
+      setEspIP(manualIP);
+      setIsConnected(true);
+
+      console.log('✅ IP saved successfully!');
+
+      showModal(
+        'Success',
+        `Connected to ESP32 at ${manualIP}`,
+        'success'
+      );
+    }
+
+    // ❗ connected === false ဖြစ်ရင်
+    // testConnection() က error Modal ကို ပြပြီးသားဖြစ်လို့
+    // ဒီနေရာမှာ Modal ထပ်မပြတော့ဘူး။
+
+  } catch (error) {
+
+    console.log(
+      '❌ Save IP error:',
+      error?.message
+    );
+
+    setError(error?.message || 'Failed to connect');
+
+    showModal(
+      'Error',
+      error?.message || 'Failed to connect to ESP32',
+      'error'
+    );
+
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // ================= AUTO CONNECT TOGGLE =================
   const handleAutoConnectToggle = async (value) => {
@@ -512,27 +633,75 @@ const testCameraConnection = async (ip) => {
   };
 
   // ================= REFRESH CONNECTION =================
-  const handleRefreshConnection = async () => {
-    console.log('🔄 Refresh connection requested');
-    if (espIP) {
-      console.log(`🔄 Testing saved IP: ${espIP}`);
-      setIsLoading(true);
-      const connected = await testConnection(espIP);
-      setIsLoading(false);
-      console.log(`📊 Refresh result: ${connected ? '✅ Connected' : '❌ Disconnected'}`);
-      if (connected) {
-        showModal('Success', 'Connected to ESP32', 'success');
-      } else {
-        showModal(
-          'Failed',
-          `Cannot connect to ESP32 at ${espIP}\n\nMake sure:\n• ESP32 is powered on\n• Same WiFi network`,
-          'error'
-        );
-      }
-    } else {
-      showModal('Error', 'No saved IP address', 'error');
+  // const handleRefreshConnection = async () => {
+  //   console.log('🔄 Refresh connection requested');
+  //   if (espIP) {
+  //     console.log(`🔄 Testing saved IP: ${espIP}`);
+  //     setIsLoading(true);
+  //     const connected = await testConnection(espIP);
+  //     setIsLoading(false);
+  //     console.log(`📊 Refresh result: ${connected ? '✅ Connected' : '❌ Disconnected'}`);
+  //     if (connected) {
+  //       showModal('Success', 'Connected to ESP32', 'success');
+  //     } else {
+  //       showModal(
+  //         'Failed',
+  //         `Cannot connect to ESP32 at ${espIP}\n\nMake sure:\n• ESP32 is powered on\n• Same WiFi network`,
+  //         'error'
+  //       );
+  //     }
+  //   } else {
+  //     showModal('Error', 'No saved IP address', 'error');
+  //   }
+  // };
+
+const handleRefreshConnection = async () => {
+  console.log('🔄 Refresh connection requested');
+
+  if (!espIP) {
+    showModal(
+      'Error',
+      'No saved ESP32 IP address',
+      'error'
+    );
+    return;
+  }
+
+  console.log(`🔄 Testing saved IP: ${espIP}`);
+
+  setIsLoading(true);
+
+  try {
+    const connected = await testConnection(espIP);
+
+    console.log(
+      `📊 Refresh result: ${connected ? '✅ Connected' : '❌ Disconnected'}`
+    );
+
+    if (connected) {
+      showModal(
+        'Success',
+        `Connected to ESP32 at ${espIP}`,
+        'success'
+      );
     }
-  };
+
+    // connected === false ဖြစ်ရင်
+    // testConnection() က detailed error Modal ပြပြီးသားပါ။
+
+  } catch (error) {
+    console.log('❌ Refresh error:', error?.message);
+
+    showModal(
+      'Refresh Failed',
+      error?.message || 'Failed to connect to ESP32',
+      'error'
+    );
+
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // ================= SCAN FOR ESP32 =================
   const handleScanDevices = async () => {
