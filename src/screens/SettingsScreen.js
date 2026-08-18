@@ -141,46 +141,167 @@ const loadSettings = async () => {
 };
 
   // ================= TEST CONNECTION =================
-  const testConnection = async (ip) => {
-    console.log(`🔍 Testing connection to: http://${ip}/status`);
-    console.log(`⏱️ Timeout: 3000ms`);
+  // const testConnection = async (ip) => {
+  //   console.log(`🔍 Testing connection to: http://${ip}/status`);
+  //   console.log(`⏱️ Timeout: 3000ms`);
     
-    try {
-      const startTime = Date.now();
-      const response = await fetch(`http://${ip}/status`, {
-        method: 'GET',
-        timeout: 3000,
-      });
-      const elapsedTime = Date.now() - startTime;
+  //   try {
+  //     const startTime = Date.now();
+  //     const response = await fetch(`http://${ip}/status`, {
+  //       method: 'GET',
+  //       timeout: 3000,
+  //     });
+  //     const elapsedTime = Date.now() - startTime;
       
-      console.log(`📡 Response status: ${response.status}`);
-      console.log(`⏱️ Response time: ${elapsedTime}ms`);
+  //     console.log(`📡 Response status: ${response.status}`);
+  //     console.log(`⏱️ Response time: ${elapsedTime}ms`);
       
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Connection successful! Data:', data);
-        console.log(`   • Status: ${data.status}`);
-        console.log(`   • IP: ${data.ip}`);
-        console.log(`   • Battery: ${data.batteryPercentage || 0}%`);
-        setIsConnected(true);
-        setError('');
-        return true;
-      } else {
-        console.log(`❌ Connection failed with status: ${response.status}`);
-        setIsConnected(false);
-        return false;
-      }
-    } catch (error) {
-      console.log('❌ Connection error:', error.message);
-      console.log('💡 Possible reasons:');
-      console.log('   • ESP32 is powered off');
-      console.log('   • Wrong IP address');
-      console.log('   • Different WiFi network');
-      setIsConnected(false);
-      return false;
-    }
-  };
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       console.log('✅ Connection successful! Data:', data);
+  //       console.log(`   • Status: ${data.status}`);
+  //       console.log(`   • IP: ${data.ip}`);
+  //       console.log(`   • Battery: ${data.batteryPercentage || 0}%`);
+  //       setIsConnected(true);
+  //       setError('');
+  //       return true;
+  //     } else {
+  //       console.log(`❌ Connection failed with status: ${response.status}`);
+  //       setIsConnected(false);
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     console.log('❌ Connection error:', error.message);
+  //     console.log('💡 Possible reasons:');
+  //     console.log('   • ESP32 is powered off');
+  //     console.log('   • Wrong IP address');
+  //     console.log('   • Different WiFi network');
+  //     setIsConnected(false);
+  //     return false;
+  //   }
+  // };
 
+  
+const testConnection = async (ip) => {
+  const url = `http://${ip}/status`;
+
+  console.log(`🔍 Testing connection to: ${url}`);
+  console.log(`⏱️ Timeout: 5000ms`);
+
+  try {
+    const startTime = Date.now();
+
+    // React Native fetch အတွက် timeout ကို Promise.race နဲ့လုပ်
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('Connection timeout after 5 seconds'));
+      }, 5000);
+    });
+
+    const fetchPromise = fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    const response = await Promise.race([
+      fetchPromise,
+      timeoutPromise,
+    ]);
+
+    const elapsedTime = Date.now() - startTime;
+
+    console.log(`📡 Response status: ${response.status}`);
+    console.log(`⏱️ Response time: ${elapsedTime}ms`);
+
+    if (response.ok) {
+      const data = await response.json();
+
+      console.log('✅ Connection successful!');
+      console.log('📦 Data:', data);
+
+      setIsConnected(true);
+      setError('');
+
+      return true;
+    }
+
+    // HTTP Error
+    const errorMessage =
+      `HTTP Error: ${response.status}\n\n` +
+      `URL: ${url}\n\n` +
+      `ESP32 returned an error response.`;
+
+    console.log('❌', errorMessage);
+
+    setIsConnected(false);
+    setError(errorMessage);
+
+    showModal(
+      'ESP32 Connection Error',
+      errorMessage,
+      'error'
+    );
+
+    return false;
+
+  } catch (error) {
+
+    console.log('❌ Connection error:', error);
+    console.log('❌ Error message:', error?.message);
+    console.log('❌ Error name:', error?.name);
+
+    let errorMessage = '';
+
+    if (error?.message?.includes('timeout')) {
+
+      errorMessage =
+        `Connection Timeout\n\n` +
+        `URL: ${url}\n\n` +
+        `ESP32 did not respond within 5 seconds.\n\n` +
+        `Possible reasons:\n` +
+        `• ESP32 is powered off\n` +
+        `• Wrong IP address\n` +
+        `• Phone and ESP32 are on different WiFi\n` +
+        `• ESP32 web server is not running`;
+
+    } else if (
+      error?.message?.includes('Network request failed')
+    ) {
+
+      errorMessage =
+        `Network Request Failed\n\n` +
+        `URL: ${url}\n\n` +
+        `Possible reasons:\n` +
+        `• Android blocked HTTP connection\n` +
+        `• Wrong IP address\n` +
+        `• Different WiFi network\n` +
+        `• ESP32 is unreachable\n` +
+        `• ESP32 web server is not running`;
+
+    } else {
+
+      errorMessage =
+        `Unknown Connection Error\n\n` +
+        `URL: ${url}\n\n` +
+        `Name: ${error?.name || 'Unknown'}\n` +
+        `Message: ${error?.message || 'Unknown error'}`;
+    }
+
+    setIsConnected(false);
+    setError(errorMessage);
+
+    // 🔥 ဒီနေရာမှာ Modal ပြမယ်
+    showModal(
+      'ESP32 Connection Failed',
+      errorMessage,
+      'error'
+    );
+
+    return false;
+  }
+};
 
 
 // ================= TEST CAMERA CONNECTION =================
