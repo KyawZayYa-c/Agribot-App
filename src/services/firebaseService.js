@@ -741,11 +741,35 @@ async savePhotoToGallery(uri) {
 // ================= AI PREDICTION HISTORY =================
 
 // ✅ Save AI prediction with image to Firebase
+// async saveAIPrediction(imageBase64, predictionResult) {
+//   try {
+//     const data = {
+//       timestamp: new Date().toISOString(),
+//       image: imageBase64,  // base64 image data
+//       result: predictionResult,
+//       deviceId: 'esp32_robot_001',
+//     };
+    
+//     const docRef = await addDoc(collection(db, 'ai_predictions'), data);
+//     console.log('✅ AI prediction saved to Firebase with ID:', docRef.id);
+//     return { success: true, id: docRef.id };
+//   } catch (error) {
+//     console.error('❌ Error saving AI prediction:', error);
+//     return { success: false, error: error.message };
+//   }
+// }
+
+  // firebaseService.js - saveAIPrediction ကို ဒီလိုထပ်ထည့်ပါ
 async saveAIPrediction(imageBase64, predictionResult) {
+  console.log('📤 saveAIPrediction called');
+  console.log('📷 imageBase64 type:', typeof imageBase64);
+  console.log('📷 imageBase64 length:', imageBase64?.length);
+  console.log('📊 predictionResult:', predictionResult);
+  
   try {
     const data = {
       timestamp: new Date().toISOString(),
-      image: imageBase64,  // base64 image data
+      image: imageBase64,
       result: predictionResult,
       deviceId: 'esp32_robot_001',
     };
@@ -755,10 +779,11 @@ async saveAIPrediction(imageBase64, predictionResult) {
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error('❌ Error saving AI prediction:', error);
+    console.error('❌ Error details:', error.message);
     return { success: false, error: error.message };
   }
 }
-
+  
 // ✅ Get all AI prediction history
 async getAIPredictionHistory(limitCount = 50) {
   try {
