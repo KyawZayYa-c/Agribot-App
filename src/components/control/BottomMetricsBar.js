@@ -29,11 +29,29 @@ const BottomMetricsBar = ({
   };
 
   // ✅ Get battery color based on level
-  const getBatteryColor = (level) => {
-    if (level > 50) return '#4CAF50';
-    if (level > 20) return '#FFC107';
-    return '#f44336';
+  const getBatteryColor = () => {
+  if (isEspConnected) {
+    return '#4CAF50';  // 🟢 Connect ဖြစ်ရင် အစိမ်း
+  } else {
+    return '#f44336';  // 🔴 Connect မဖြစ်ရင် အနီ
+  }
   };
+  
+  const getBatteryIconName = () => {
+  if (isEspConnected) {
+    return "battery";
+  } else {
+    return "battery-alert";
+  }
+  };
+  
+  const getBatteryDisplayText = () => {
+  if (isEspConnected) {
+    return `${Math.round(batteryLevel)}%`;
+  } else {
+    return '--%';
+  }
+};
 
   return (
     <View style={styles.bottomMetricsRow}>
@@ -97,7 +115,7 @@ const BottomMetricsBar = ({
       </View>
 
       {/* Battery */}
-      <View style={styles.bottomMetricCard}>
+      {/* <View style={styles.bottomMetricCard}>
        <MaterialCommunityIcons 
   name={batteryLevel > 20 ? "battery" : "battery-alert"} 
   size={24} 
@@ -120,7 +138,33 @@ const BottomMetricsBar = ({
             {Math.round(batteryLevel)}%
           </Text>
         </View>
-      </View>
+      </View> */}
+
+      {/* Battery */}
+<View style={styles.bottomMetricCard}>
+  <MaterialCommunityIcons 
+    name={getBatteryIconName()}   // ✅ ဒါကိုသုံးပါ
+    size={24} 
+    color={getBatteryColor()}    // ✅ parameter မပါဘူး
+  />
+  <View style={styles.bottomMetricTexts}>
+    <Text style={styles.bottomMetricLabel}>Battery</Text>
+    <View style={styles.batteryContainerSmall}>
+      <View 
+        style={[
+          styles.batteryFillSmall, 
+          { 
+            width: isEspConnected ? `${Math.min(batteryLevel, 100)}%` : '0%',  // ✅ ဒါကိုသုံးပါ
+            backgroundColor: getBatteryColor()
+          }
+        ]} 
+      />
+    </View>
+    <Text style={[styles.bottomMetricValue, { color: getBatteryColor(), fontSize: 14 }]}>
+      {getBatteryDisplayText()}  // ✅ ဒါကိုသုံးပါ
+    </Text>
+  </View>
+</View>
     </View>
   );
 };
