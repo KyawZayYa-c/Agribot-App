@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   speedContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight:14,
+    paddingRight:10,
     width: 50,
     marginVertical: 20,
   },

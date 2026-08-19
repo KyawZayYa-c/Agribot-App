@@ -18,15 +18,15 @@ const TelemetryCard = ({ telemetry, todayWorkTime }) => {
 
   // ✅ Data array - ESP32 API ကနေလာတဲ့ Data တွေကိုသုံး
   const telemetryItems = [
-    {
-      id: 'battery',
-      icon: <MaterialCommunityIcons name="battery-charging" size={24} color="#8BC34A" />,
-      label: 'Battery',
-      value: `${telemetry.battery || 0}%`,
-      subLabel: telemetry.battery > 80 ? 'Good' : telemetry.battery > 20 ? 'Medium' : 'Low',
-      progress: (telemetry.battery || 0) / 100,
-      showProgress: true,
-    },
+    // {
+    //   id: 'battery',
+    //   icon: <MaterialCommunityIcons name="battery-charging" size={24} color="#8BC34A" />,
+    //   label: 'Battery',
+    //   value: `${telemetry.battery || 0}%`,
+    //   subLabel: telemetry.battery > 80 ? 'Good' : telemetry.battery > 20 ? 'Medium' : 'Low',
+    //   progress: (telemetry.battery || 0) / 100,
+    //   showProgress: true,
+    // },
     // {
     //   id: 'seed',
     //   icon: <MaterialCommunityIcons name="seed" size={24} color="#8BC34A" />,
@@ -36,14 +36,14 @@ const TelemetryCard = ({ telemetry, todayWorkTime }) => {
     //   progress: (telemetry.seedLevel || 0) / 100,
     //   showProgress: true,
     // },
-    {
-      id: 'distance',
-      icon: <Ionicons name="location-outline" size={24} color="#8BC34A" />,
-      label: 'Distance',
-      value: `${telemetry.distance || 0} km`,
-      subLabel: 'Today',
-      showProgress: false,
-    },
+    // {
+    //   id: 'distance',
+    //   icon: <Ionicons name="location-outline" size={24} color="#8BC34A" />,
+    //   label: 'Distance',
+    //   value: `${telemetry.distance || 0} km`,
+    //   subLabel: 'Today',
+    //   showProgress: false,
+    // },
     {
       id: 'time',
       icon: <Ionicons name="time-outline" size={24} color="#8BC34A" />,
