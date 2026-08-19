@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import firebaseService from '../services/firebaseService';
 
-const BASE_URL = 'http://192.168.100.3:5000';
+const BASE_URL = 'https://soil-analysis-ai.onrender.com';
 const backgroundImage = require('../../assets/field_background.jpg');
 
 export default function AITestScreen({ onBack, initialImage = null }) {
