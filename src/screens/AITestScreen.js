@@ -6,7 +6,9 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import firebaseService from '../services/firebaseService';
 
-const BASE_URL = 'https://agribot-fruit-classifier.onrender.com';
+// const BASE_URL = 'https://agribot-fruit-classifier.onrender.com';
+// src/screens/AITestScreen.js
+const BASE_URL = 'http://10.248.244.153:5000';
 
 export default function AITestScreen({ onBack, initialImage = null }) {
   const [imageUri, setImageUri] = useState(initialImage);

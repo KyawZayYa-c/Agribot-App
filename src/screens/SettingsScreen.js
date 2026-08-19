@@ -23,11 +23,15 @@ const STORAGE_KEYS = {
   AUTO_CONNECT: '@auto_connect',
 };
 
+const DEFAULT_ESP_IP = '10.248.244.165';
+const DEFAULT_CAMERA_IP = '10.248.244.99';
+
 const SettingsScreen = ({ navigation }) => {
-  const [espIP, setEspIP] = useState('10.248.244.165');
-  const [cameraIP, setCameraIP] = useState('10.248.244.99');
-  const [manualIP, setManualIP] = useState('');
-  const [manualCameraIP, setManualCameraIP] = useState('');
+  const [espIP, setEspIP] = useState(DEFAULT_ESP_IP);
+  const [cameraIP, setCameraIP] = useState(DEFAULT_CAMERA_IP);
+  const [manualIP, setManualIP] = useState(DEFAULT_ESP_IP);
+  const [manualCameraIP, setManualCameraIP] = useState(DEFAULT_CAMERA_IP);
+  
   const [autoConnect, setAutoConnect] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isCameraConnected, setIsCameraConnected] = useState(false);
@@ -95,7 +99,52 @@ const SettingsScreen = ({ navigation }) => {
 
   // src/screens/SettingsScreen.js
 
-const loadSettings = async () => {
+// const loadSettings = async () => {
+//   console.log('📂 Loading settings...');
+//   try {
+//     const savedIP = await AsyncStorage.getItem(STORAGE_KEYS.ESP_IP);
+//     const savedCameraIP = await AsyncStorage.getItem(STORAGE_KEYS.CAMERA_IP);
+//     const auto = await AsyncStorage.getItem(STORAGE_KEYS.AUTO_CONNECT);
+    
+//     console.log('📂 Saved ESP IP:', savedIP);
+//     console.log('📂 Saved Camera IP:', savedCameraIP);
+//     console.log('📂 Auto Connect:', auto);
+    
+//     const isAutoOn = auto !== null ? JSON.parse(auto) : true;
+//     setAutoConnect(isAutoOn);
+    
+//     if (savedIP) {
+//       setEspIP(savedIP);
+//       setManualIP(savedIP);
+      
+//       // ✅ Auto Connect ဖွင့်ထားမှသာ connection စစ်ပါ
+//       if (isAutoOn) {
+//         console.log(`🔄 Checking connection for saved IP: ${savedIP}`);
+//         await testConnection(savedIP);
+//       } else {
+//         console.log(`⏸️ Auto Connect is off, skipping ESP connection check`);
+//       }
+//     }
+    
+//     if (savedCameraIP) {
+//       setCameraIP(savedCameraIP);
+//       setManualCameraIP(savedCameraIP);
+      
+//       // ✅ Auto Connect ဖွင့်ထားမှသာ camera connection စစ်ပါ
+//       if (isAutoOn) {
+//         console.log(`🔄 Checking camera connection for saved IP: ${savedCameraIP}`);
+//         await testCameraConnection(savedCameraIP);
+//       } else {
+//         console.log(`⏸️ Auto Connect is off, skipping camera connection check`);
+//       }
+//     }
+    
+//   } catch (error) {
+//     console.error('❌ Error loading settings:', error);
+//   }
+  // };
+  
+  const loadSettings = async () => {
   console.log('📂 Loading settings...');
   try {
     const savedIP = await AsyncStorage.getItem(STORAGE_KEYS.ESP_IP);
@@ -109,30 +158,24 @@ const loadSettings = async () => {
     const isAutoOn = auto !== null ? JSON.parse(auto) : true;
     setAutoConnect(isAutoOn);
     
-    if (savedIP) {
-      setEspIP(savedIP);
-      setManualIP(savedIP);
-      
-      // ✅ Auto Connect ဖွင့်ထားမှသာ connection စစ်ပါ
-      if (isAutoOn) {
-        console.log(`🔄 Checking connection for saved IP: ${savedIP}`);
-        await testConnection(savedIP);
-      } else {
-        console.log(`⏸️ Auto Connect is off, skipping ESP connection check`);
-      }
-    }
+    // ✅ Saved IP ရှိရင် သုံးမယ်၊ မရှိရင် Default ကိုသုံးမယ်
+    const espIpToUse = savedIP || DEFAULT_ESP_IP;
+    const cameraIpToUse = savedCameraIP || DEFAULT_CAMERA_IP;
     
-    if (savedCameraIP) {
-      setCameraIP(savedCameraIP);
-      setManualCameraIP(savedCameraIP);
+    setEspIP(espIpToUse);
+    setManualIP(espIpToUse);
+    setCameraIP(cameraIpToUse);
+    setManualCameraIP(cameraIpToUse);
+    
+    // ✅ Auto Connect ဖွင့်ထားမှသာ connection စစ်ပါ
+    if (isAutoOn) {
+      console.log(`🔄 Checking connection for ESP: ${espIpToUse}`);
+      await testConnection(espIpToUse);
       
-      // ✅ Auto Connect ဖွင့်ထားမှသာ camera connection စစ်ပါ
-      if (isAutoOn) {
-        console.log(`🔄 Checking camera connection for saved IP: ${savedCameraIP}`);
-        await testCameraConnection(savedCameraIP);
-      } else {
-        console.log(`⏸️ Auto Connect is off, skipping camera connection check`);
-      }
+      console.log(`🔄 Checking connection for Camera: ${cameraIpToUse}`);
+      await testCameraConnection(cameraIpToUse);
+    } else {
+      console.log(`⏸️ Auto Connect is off, skipping connection checks`);
     }
     
   } catch (error) {
