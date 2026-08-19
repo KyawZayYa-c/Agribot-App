@@ -48,10 +48,73 @@ export default function ChatListTab({
     return '';
   };
 
-  const getDisplayData = (item) => {
-    // ✅ AI Prediction အတွက်
-    if (isPrediction) {
-    // ✅ result ထဲက class ကိုယူပြီး soil_name ကိုပြမယ်
+  // const getDisplayData = (item) => {
+  //   // ✅ AI Prediction အတွက်
+  //   if (isPrediction) {
+  //   // ✅ result ထဲက class ကိုယူပြီး soil_name ကိုပြမယ်
+  //   const resultData = item.result || {};
+  //   // ✅ soil_name ရှိရင် ပြမယ်၊ မရှိရင် class ကိုပြမယ်
+  //   const displayClass = resultData.soil_name || resultData.class || 'Unknown';
+    
+  //   return {
+  //     displayText: `🌍 ${displayClass}`,
+  //     sender: 'ai',
+  //     timestamp: item.timestamp,
+  //     count: 1,
+  //     pairCount: 0,
+  //     isSession: false,
+  //     id: item.id,
+  //     image: item.image,
+  //     crops: resultData.crops || [],
+  //     advice: resultData.advice || [],
+  //     soilDescription: resultData.soil_description || '',
+  //     soilName: displayClass,
+  //   };
+  // }
+
+  //   // ✅ Chat Session အတွက်
+  //   if (item.messages && item.messages.length > 0) {
+  //     const lastMsg = item.messages[item.messages.length - 1];
+  //     const displayText = lastMsg.text || lastMsg.message || 'No message';
+  //     const sender = lastMsg.sender || 'unknown';
+  //     const timestamp = lastMsg.timestamp || item.updatedAt || item.createdAt;
+      
+  //     const userMessages = item.messages.filter(m => m.sender === 'user' || m.sender === 'You');
+  //     const aiMessages = item.messages.filter(m => m.sender === 'ai' || m.sender === 'AI');
+  //     const pairCount = Math.min(userMessages.length, aiMessages.length);
+      
+  //     return {
+  //       displayText,
+  //       sender,
+  //       timestamp,
+  //       count: item.messages.length,
+  //       pairCount: pairCount,
+  //       isSession: true,
+  //       sessionId: item.id || item.sessionId,
+  //       id: item.id || item.sessionId,
+  //       image: item.image,
+  //     };
+  //   }
+    
+  //   return {
+  //     displayText: item.text || item.message || 'No message',
+  //     sender: item.sender || 'unknown',
+  //     timestamp: item.timestamp || item.updatedAt || Date.now(),
+  //     count: 1,
+  //     pairCount: 0,
+  //     isSession: false,
+  //     sessionId: item.id || null,
+  //     id: item.id,
+  //     image: item.image,
+  //   };
+  // };
+
+
+  // components/History/ChatListTab.js - getDisplayData function ကိုပြင်ပါ
+
+const getDisplayData = (item) => {
+  // ✅ AI Prediction အတွက်
+  if (isPrediction) {
     const resultData = item.result || {};
     // ✅ soil_name ရှိရင် ပြမယ်၊ မရှိရင် class ကိုပြမယ်
     const displayClass = resultData.soil_name || resultData.class || 'Unknown';
@@ -72,43 +135,43 @@ export default function ChatListTab({
     };
   }
 
-    // ✅ Chat Session အတွက်
-    if (item.messages && item.messages.length > 0) {
-      const lastMsg = item.messages[item.messages.length - 1];
-      const displayText = lastMsg.text || lastMsg.message || 'No message';
-      const sender = lastMsg.sender || 'unknown';
-      const timestamp = lastMsg.timestamp || item.updatedAt || item.createdAt;
-      
-      const userMessages = item.messages.filter(m => m.sender === 'user' || m.sender === 'You');
-      const aiMessages = item.messages.filter(m => m.sender === 'ai' || m.sender === 'AI');
-      const pairCount = Math.min(userMessages.length, aiMessages.length);
-      
-      return {
-        displayText,
-        sender,
-        timestamp,
-        count: item.messages.length,
-        pairCount: pairCount,
-        isSession: true,
-        sessionId: item.id || item.sessionId,
-        id: item.id || item.sessionId,
-        image: item.image,
-      };
-    }
+  // ✅ Chat Session အတွက်
+  if (item.messages && item.messages.length > 0) {
+    const lastMsg = item.messages[item.messages.length - 1];
+    const displayText = lastMsg.text || lastMsg.message || 'No message';
+    const sender = lastMsg.sender || 'unknown';
+    const timestamp = lastMsg.timestamp || item.updatedAt || item.createdAt;
+    
+    const userMessages = item.messages.filter(m => m.sender === 'user' || m.sender === 'You');
+    const aiMessages = item.messages.filter(m => m.sender === 'ai' || m.sender === 'AI');
+    const pairCount = Math.min(userMessages.length, aiMessages.length);
     
     return {
-      displayText: item.text || item.message || 'No message',
-      sender: item.sender || 'unknown',
-      timestamp: item.timestamp || item.updatedAt || Date.now(),
-      count: 1,
-      pairCount: 0,
-      isSession: false,
-      sessionId: item.id || null,
-      id: item.id,
+      displayText: displayText,
+      sender: sender,
+      timestamp: timestamp,
+      count: item.messages.length,
+      pairCount: pairCount,
+      isSession: true,
+      sessionId: item.id || item.sessionId,
+      id: item.id || item.sessionId,
       image: item.image,
     };
+  }
+  
+  // ✅ Single message အတွက်
+  return {
+    displayText: item.text || item.message || 'No message',
+    sender: item.sender || 'unknown',
+    timestamp: item.timestamp || item.updatedAt || Date.now(),
+    count: 1,
+    pairCount: 0,
+    isSession: false,
+    sessionId: item.id || null,
+    id: item.id,
+    image: item.image,
   };
-
+};
   const handleLongPress = (item) => {
     console.log('📌 Long press on item:', item.id);
     setSelectedItem(item);
@@ -204,7 +267,6 @@ export default function ChatListTab({
   // );
   // };
   
-  // components/History/ChatListTab.js - renderItem function ကိုပြင်ပါ
 
 const renderItem = ({ item, index }) => {
   const data = getDisplayData(item);
@@ -215,7 +277,6 @@ const renderItem = ({ item, index }) => {
       key={item.id || index}
       onPress={() => {
         if (isPrediction && hasImage) {
-          // ✅ soilName နဲ့အခြား data တွေပါအောင်ပို့
           onChatPress && onChatPress({
             ...item,
             image: data.image,
@@ -254,8 +315,7 @@ const renderItem = ({ item, index }) => {
           )}
           <View style={styles.chatTexts}>
             <Text style={styles.chatMessage} numberOfLines={2}>
-              {/* ✅ soilName ကိုပြမယ် */}
-              {isPrediction ? `🌍 ${data.soilName || data.displayText}` : data.displayText || 'No data'}
+              {data.displayText || 'No data'}
             </Text>
             <Text style={styles.chatTime}>
               {isPrediction ? '🤖 AI Detection' : (data.sender === 'ai' ? '🤖 AI' : '🧑 You')}

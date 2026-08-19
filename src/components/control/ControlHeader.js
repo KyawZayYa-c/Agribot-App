@@ -11,17 +11,12 @@ const ControlHeader = ({ onBack, isConnected = true }) => {
           <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
         </TouchableOpacity>
         
-        <View style={styles.connectedIndicator}>
-          <View style={styles.greenDot} />
-          <Text style={styles.connectionText}>Connected</Text>
-        </View>
-        <Ionicons name="wifi" size={16} color="#8BC34A" style={styles.wifiIcon} />
+        
       </View>
       
       <Text style={styles.headerTitle}>Remote Control</Text>
       
       <View style={styles.headerRight}>
-        <MaterialCommunityIcons name="battery-outline" size={18} color="#8BC34A" />
         <Ionicons name="ellipsis-vertical" size={18} color="#FFFFFF" style={styles.menuIcon} />
       </View>
     </View>
@@ -34,7 +29,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 39,
-    paddingVertical: 8,
+    paddingVertical: 7,
     backgroundColor: '#0B1E13',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.05)',

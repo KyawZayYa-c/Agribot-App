@@ -659,6 +659,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: width * 0.03,
     paddingBottom: 8,
+    paddingTop: 3,
     gap: 8,
   },
   column: {
@@ -672,11 +673,11 @@ const styles = StyleSheet.create({
     width: '65.5%',
     height: '100%',
     flexDirection: 'column',
-    gap: 8,
+    gap: 4,
   },
   rightTopRow: {
     flexDirection: 'row',
-    height: '78%',
+    height: '82%',
     gap: 8,
   },
   columnRightinLeft: {
