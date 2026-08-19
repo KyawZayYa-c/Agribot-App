@@ -51,17 +51,26 @@ export default function ChatListTab({
   const getDisplayData = (item) => {
     // ✅ AI Prediction အတွက်
     if (isPrediction) {
-      return {
-        displayText: `Result: ${item.result?.class || 'Unknown'} (${item.result?.confidence || 'N/A'})`,
-        sender: 'ai',
-        timestamp: item.timestamp,
-        count: 1,
-        pairCount: 0,
-        isSession: false,
-        id: item.id,
-        image: item.image,
-      };
-    }
+    // ✅ result ထဲက class ကိုယူပြီး soil_name ကိုပြမယ်
+    const resultData = item.result || {};
+    // ✅ soil_name ရှိရင် ပြမယ်၊ မရှိရင် class ကိုပြမယ်
+    const displayClass = resultData.soil_name || resultData.class || 'Unknown';
+    
+    return {
+      displayText: `🌍 ${displayClass}`,
+      sender: 'ai',
+      timestamp: item.timestamp,
+      count: 1,
+      pairCount: 0,
+      isSession: false,
+      id: item.id,
+      image: item.image,
+      crops: resultData.crops || [],
+      advice: resultData.advice || [],
+      soilDescription: resultData.soil_description || '',
+      soilName: displayClass,
+    };
+  }
 
     // ✅ Chat Session အတွက်
     if (item.messages && item.messages.length > 0) {
@@ -136,20 +145,87 @@ export default function ChatListTab({
   };
 
   // ✅ Render Item
-  const renderItem = ({ item, index }) => {
-    const data = getDisplayData(item);
-     const hasImage = isPrediction && data.image;
+  // const renderItem = ({ item, index }) => {
+  //   const data = getDisplayData(item);
+  //    const hasImage = isPrediction && data.image;
     
-     return (
+  //    return (
+  //   <TouchableOpacity
+  //     key={item.id || index}
+  //     onPress={() => {
+  //       // ✅ Prediction ဆိုရင် ပုံနဲ့အဖြေကိုပြမယ်
+  //       if (isPrediction && hasImage) {
+  //         onChatPress && onChatPress({
+  //           ...item,
+  //           image: data.image,
+  //           result: item.result
+  //         });
+  //       } else {
+  //         onChatPress && onChatPress(item);
+  //       }
+  //     }}
+  //     onLongPress={() => handleLongPress(item)}
+  //     activeOpacity={0.7}
+  //     delayLongPress={500}
+  //   >
+  //     <Card style={styles.glassCardSmall}>
+  //       <Card.Content style={styles.smallCardContent}>
+  //         {/* ✅ Prediction ဆိုရင် ပုံသေးလေးပြမယ် */}
+  //         {isPrediction && hasImage ? (
+  //           <Image 
+  //             source={{ uri: data.image }} 
+  //             style={styles.thumbnailImage}
+  //             resizeMode="cover"
+  //           />
+  //         ) : (
+  //           <View style={styles.iconCircle}>
+  //             <Ionicons
+  //               name={isPrediction ? 'scan' : (data.sender === 'ai' ? 'hardware-chip' : 'person')}
+  //               size={20}
+  //               color={isPrediction ? '#8BC34A' : (data.sender === 'ai' ? '#8CE835' : '#4FC3F7')}
+  //             />
+  //           </View>
+  //         )}
+  //         <View style={styles.chatTexts}>
+  //           <Text style={styles.chatMessage} numberOfLines={2}>
+  //             {data.displayText || 'No data'}
+  //           </Text>
+  //           <Text style={styles.chatTime}>
+  //             {isPrediction ? '🤖 AI Detection' : (data.sender === 'ai' ? '🤖 AI' : '🧑 You')}
+  //             {data.pairCount > 0 && ` · ${data.pairCount} Q&A`}
+  //             {data.count > 0 && !data.pairCount && ` · ${data.count} messages`}
+  //             {' · '}
+  //             {data.timestamp ? new Date(data.timestamp).toLocaleString() : 'Just now'}
+  //           </Text>
+  //         </View>
+  //       </Card.Content>
+  //     </Card>
+  //   </TouchableOpacity>
+  // );
+  // };
+  
+  // components/History/ChatListTab.js - renderItem function ကိုပြင်ပါ
+
+const renderItem = ({ item, index }) => {
+  const data = getDisplayData(item);
+  const hasImage = isPrediction && data.image;
+
+  return (
     <TouchableOpacity
       key={item.id || index}
       onPress={() => {
-        // ✅ Prediction ဆိုရင် ပုံနဲ့အဖြေကိုပြမယ်
         if (isPrediction && hasImage) {
+          // ✅ soilName နဲ့အခြား data တွေပါအောင်ပို့
           onChatPress && onChatPress({
             ...item,
             image: data.image,
-            result: item.result
+            result: {
+              ...item.result,
+              soil_name: data.soilName,
+              crops: data.crops,
+              advice: data.advice,
+              soil_description: data.soilDescription,
+            }
           });
         } else {
           onChatPress && onChatPress(item);
@@ -161,7 +237,6 @@ export default function ChatListTab({
     >
       <Card style={styles.glassCardSmall}>
         <Card.Content style={styles.smallCardContent}>
-          {/* ✅ Prediction ဆိုရင် ပုံသေးလေးပြမယ် */}
           {isPrediction && hasImage ? (
             <Image 
               source={{ uri: data.image }} 
@@ -179,7 +254,8 @@ export default function ChatListTab({
           )}
           <View style={styles.chatTexts}>
             <Text style={styles.chatMessage} numberOfLines={2}>
-              {data.displayText || 'No data'}
+              {/* ✅ soilName ကိုပြမယ် */}
+              {isPrediction ? `🌍 ${data.soilName || data.displayText}` : data.displayText || 'No data'}
             </Text>
             <Text style={styles.chatTime}>
               {isPrediction ? '🤖 AI Detection' : (data.sender === 'ai' ? '🤖 AI' : '🧑 You')}
@@ -193,7 +269,7 @@ export default function ChatListTab({
       </Card>
     </TouchableOpacity>
   );
-  };
+};
 
   // ✅ Delete လုပ်နေရင် loading ကိုမပြဘူး
   const showLoading = loading && !isDeleting;

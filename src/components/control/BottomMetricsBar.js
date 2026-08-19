@@ -161,7 +161,7 @@ const BottomMetricsBar = ({
       />
     </View>
     <Text style={[styles.bottomMetricValue, { color: getBatteryColor(), fontSize: 14 }]}>
-      {getBatteryDisplayText()}  // ✅ ဒါကိုသုံးပါ
+      {getBatteryDisplayText()}  
     </Text>
   </View>
 </View>

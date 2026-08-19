@@ -85,12 +85,11 @@ export default function ChatDetailScreen({ chat, onBack }) {
     console.log('📊 ChatDetailScreen mounted');
     console.log('📊 chat keys:', Object.keys(chat || {}));
     console.log('📊 chat.image exists:', !!chat?.image);
-    console.log('📊 chat.image type:', typeof chat?.image);
-    console.log('📊 chat.image length:', chat?.image?.length);
     console.log('📊 chat.result exists:', !!chat?.result);
-    
-    if (chat?.image) {
-      console.log('📊 image first 50 chars:', chat.image.substring(0, 50));
+    if (chat?.result) {
+      console.log('📊 chat.result keys:', Object.keys(chat.result));
+      console.log('📊 chat.result.soil_name:', chat.result.soil_name);
+      console.log('📊 chat.result.crops:', chat.result.crops?.length);
     }
   }, [chat]);
 
@@ -107,19 +106,25 @@ export default function ChatDetailScreen({ chat, onBack }) {
   const messages = chat.messages || [];
   const exchangeCount = Math.ceil(messages.length / 2);
   
-  // ================================================
-  // ✅ KEY FIX: hasImage ကို ပိုကောင်းအောင်စစ်ပါ
-  // ================================================
+  // ✅ Check if it's a prediction
   const hasImage = chat?.image && 
     typeof chat.image === 'string' && 
     chat.image.length > 100;
   
-  // ✅ ပုံပါပြီး result ရှိမှသာ isPrediction ဖြစ်မယ်
   const isPrediction = hasImage && chat?.result && 
-    (chat.result.class || chat.result.confidence);
+    (chat.result.class || chat.result.soil_name);
 
-  console.log('📊 Final hasImage:', hasImage);
+  // ✅ Get prediction data
+  const resultData = chat.result || {};
+  const soilName = resultData.soil_name || resultData.class || 'Unknown';
+  const confidence = resultData.confidence || 'N/A';
+  const crops = resultData.crops || [];
+  const advice = resultData.advice || [];
+  const soilDescription = resultData.soil_description || '';
+
   console.log('📊 Final isPrediction:', isPrediction);
+  console.log('📊 soilName:', soilName);
+  console.log('📊 crops count:', crops.length);
 
   // ✅ Convert to pairs (for chat only)
   const getPairs = () => {
@@ -154,7 +159,7 @@ export default function ChatDetailScreen({ chat, onBack }) {
           {/* Content */}
           <ScrollView contentContainerStyle={styles.content}>
             
-            {/* ✅ Prediction Image - isPrediction မှသာပြမယ် */}
+            {/* ✅ Prediction Image */}
             {isPrediction && hasImage ? (
               <View style={styles.imageContainer}>
                 <Image 
@@ -169,16 +174,48 @@ export default function ChatDetailScreen({ chat, onBack }) {
               </View>
             ) : null}
             
-            {/* ✅ Prediction Result - isPrediction မှသာပြမယ် */}
-            {isPrediction && chat?.result && (
+            {/* ✅ Prediction Result - ပိုပြည့်စုံအောင်ပြမယ် */}
+            {isPrediction && (
               <View style={styles.resultContainer}>
                 <Text style={styles.resultLabel}>🔬 Detection Result</Text>
-                <Text style={styles.resultText}>{chat.result.class}</Text>
-                <Text style={styles.confidenceText}>Confidence: {chat.result.confidence}</Text>
+                <Text style={styles.resultText}>🌍 {soilName}</Text>
+                
+                {confidence && confidence !== 'N/A' && (
+                  <Text style={styles.confidenceText}>Confidence: {confidence}</Text>
+                )}
+                
                 {chat.timestamp && (
                   <Text style={styles.timeText}>
                     📅 {new Date(chat.timestamp).toLocaleString()}
                   </Text>
+                )}
+
+                {/* ✅ Crops List */}
+                {crops && crops.length > 0 && (
+                  <>
+                    <Text style={styles.detailSectionTitle}>🌱 စိုက်ပျိုးနိုင်သော သီးနှံများ</Text>
+                    {crops.map((crop, index) => (
+                      <Text key={index} style={styles.detailListItem}>• {crop}</Text>
+                    ))}
+                  </>
+                )}
+
+                {/* ✅ Soil Description */}
+                {soilDescription && (
+                  <>
+                    <Text style={styles.detailSectionTitle}>📖 မြေအကြောင်း</Text>
+                    <Text style={styles.detailDescription}>{soilDescription}</Text>
+                  </>
+                )}
+
+                {/* ✅ Advice List */}
+                {advice && advice.length > 0 && (
+                  <>
+                    <Text style={styles.detailSectionTitle}>💡 စိုက်ပျိုးရန် အကြံပြုချက်များ</Text>
+                    {advice.map((item, index) => (
+                      <Text key={index} style={styles.detailListItem}>• {item}</Text>
+                    ))}
+                  </>
                 )}
               </View>
             )}
@@ -234,8 +271,6 @@ export default function ChatDetailScreen({ chat, onBack }) {
               </View>
             ))}
           </ScrollView>
-
-         
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -346,6 +381,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8,
   },
+  detailSectionTitle: {
+    color: '#CCFF90',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 12,
+    marginBottom: 6,
+  },
+  detailListItem: {
+    color: '#B0BEC5',
+    fontSize: 14,
+    paddingVertical: 2,
+    paddingLeft: 8,
+  },
+  detailDescription: {
+    color: '#B0BEC5',
+    fontSize: 14,
+    lineHeight: 20,
+    paddingLeft: 8,
+    marginBottom: 4,
+  },
   sessionInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -437,33 +492,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'rgba(255,255,255,0.05)',
     marginVertical: 12,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-    backgroundColor: 'rgba(11, 30, 19, 0.9)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(140, 232, 53, 0.1)',
-    alignItems: 'center',
-  },
-  closeBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    backgroundColor: 'rgba(140, 232, 53, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(140, 232, 53, 0.2)',
-  },
-  closeText: {
-    color: '#8CE835',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
   },
   heading1Wrapper: {
     marginTop: 10,
