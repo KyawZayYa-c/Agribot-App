@@ -165,45 +165,74 @@ export default function AITestScreen({ onBack, initialImage = null }) {
         });
       } 
       // ✅ Mobile အတွက် - URI ကို သုံးပါ
-      else if (typeof fileOrUri === 'string') {
-        // ✅ base64 data URI ဖြစ်နေရင်
-        if (fileOrUri.startsWith('data:image')) {
-          console.log('📤 Mobile: Uploading from base64 data');
-          imageBase64 = fileOrUri;
+      // else if (typeof fileOrUri === 'string') {
+      //   // ✅ base64 data URI ဖြစ်နေရင်
+      //   if (fileOrUri.startsWith('data:image')) {
+      //     console.log('📤 Mobile: Uploading from base64 data');
+      //     imageBase64 = fileOrUri;
           
-          const response = await fetch(fileOrUri);
-          const blob = await response.blob();
-          const filename = `capture_${Date.now()}.jpg`;
-          const file = new File([blob], filename, { type: 'image/jpeg' });
-          formData.append('image', file, filename);
-        } else {
-          // ✅ ပုံမှန် URI
-          const filename = fileOrUri.split('/').pop() || 'photo.jpg';
-          const match = /\.(\w+)$/.exec(filename);
-          const type = match ? `image/${match[1]}` : 'image/jpeg';
+      //     const response = await fetch(fileOrUri);
+      //     const blob = await response.blob();
+      //     const filename = `capture_${Date.now()}.jpg`;
+      //     const file = new File([blob], filename, { type: 'image/jpeg' });
+      //     formData.append('image', file, filename);
+      //   } else {
+      //     // ✅ ပုံမှန် URI
+      //     const filename = fileOrUri.split('/').pop() || 'photo.jpg';
+      //     const match = /\.(\w+)$/.exec(filename);
+      //     const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-          console.log('📤 Mobile: Uploading from URI:', filename);
-          formData.append('image', {
-            uri: fileOrUri,
-            name: filename,
-            type: type,
-          });
+      //     console.log('📤 Mobile: Uploading from URI:', filename);
+      //     formData.append('image', {
+      //       uri: fileOrUri,
+      //       name: filename,
+      //       type: type,
+      //     });
 
-          // ✅ URI ကနေ base64 ပြောင်းပါ
-          try {
-            const response = await fetch(fileOrUri);
-            const blob = await response.blob();
-            const reader = new FileReader();
-            imageBase64 = await new Promise((resolve) => {
-              reader.onload = () => resolve(reader.result);
-              reader.readAsDataURL(blob);
-            });
-            console.log('✅ Image converted to base64 for Firebase');
-          } catch (err) {
-            console.log('⚠️ Could not convert to base64, skipping Firebase save');
-          }
-        }
-      } else {
+      //     // ✅ URI ကနေ base64 ပြောင်းပါ
+      //     try {
+      //       const response = await fetch(fileOrUri);
+      //       const blob = await response.blob();
+      //       const reader = new FileReader();
+      //       imageBase64 = await new Promise((resolve) => {
+      //         reader.onload = () => resolve(reader.result);
+      //         reader.readAsDataURL(blob);
+      //       });
+      //       console.log('✅ Image converted to base64 for Firebase');
+      //     } catch (err) {
+      //       console.log('⚠️ Could not convert to base64, skipping Firebase save');
+      //     }
+      //   }
+     
+      // } 
+      // ❌ ဒီအပိုင်းကိုရှာပါ
+else if (typeof fileOrUri === 'string') {
+  const filename = fileOrUri.split('/').pop() || 'photo.jpg';
+  const match = /\.(\w+)$/.exec(filename);
+  const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+  console.log('📤 Mobile: Uploading from URI:', filename);
+  formData.append('image', {
+    uri: fileOrUri,
+    name: filename,
+    type: type,
+  });
+
+  // ✅ Mobile အတွက် base64 ပြောင်းပါ (URI ကနေ)
+  try {
+    const response = await fetch(fileOrUri);
+    const blob = await response.blob();
+    const reader = new FileReader();
+    imageBase64 = await new Promise((resolve) => {
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+    console.log('✅ Image converted to base64 for Firebase');
+  } catch (err) {
+    console.log('⚠️ Could not convert to base64, skipping Firebase save');
+  }
+}
+      else {
         throw new Error('Unsupported file format');
       }
 
