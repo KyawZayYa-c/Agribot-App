@@ -23,8 +23,8 @@ const STORAGE_KEYS = {
   AUTO_CONNECT: '@auto_connect',
 };
 
-const DEFAULT_ESP_IP = '';
-const DEFAULT_CAMERA_IP = '';
+const DEFAULT_ESP_IP = '10.248.244.165';
+const DEFAULT_CAMERA_IP = '10.248.244.99';
 
 const SettingsScreen = ({ navigation }) => {
   const [espIP, setEspIP] = useState(DEFAULT_ESP_IP);

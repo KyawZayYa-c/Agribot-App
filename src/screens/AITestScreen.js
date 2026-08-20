@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import firebaseService from '../services/firebaseService';
 
-const BASE_URL = 'https://soil-analysis-ai.onrender.com';
+const BASE_URL = 'http://10.248.244.172:5000';
 const backgroundImage = require('../../assets/field_background.jpg');
 
 export default function AITestScreen({ onBack, initialImage = null }) {
@@ -291,6 +291,73 @@ export default function AITestScreen({ onBack, initialImage = null }) {
       abortControllerRef.current = null;
     }
   };
+  
+  // uploadAndPredict Function အတွင်း ပြင်ဆင်ရန်
+// const uploadAndPredict = async (fileOrUri) => {
+//   abortControllerRef.current = new AbortController();
+  
+//   setLoading(true);
+//   setResult(null);
+//   setError(null);
+//   setUploadProgress(0);
+
+//   try {
+//     const formData = new FormData();
+
+//     // ✅ Web Platform အတွက်
+//     if (Platform.OS === 'web' && fileOrUri instanceof File) {
+//       formData.append('image', fileOrUri, fileOrUri.name);
+//     } 
+//     // ✅ Mobile (Android/iOS) အတွက်
+//     else if (typeof fileOrUri === 'string') {
+//       const filename = fileOrUri.split('/').pop() || `photo_${Date.now()}.jpg`;
+//       const match = /\.(\w+)$/.exec(filename);
+//       const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+//       formData.append('image', {
+//         uri: fileOrUri,
+//         name: filename,
+//         type: type,
+//       });
+//     }
+
+//     // Axios Request
+//     const response = await axios({
+//       method: 'POST',
+//       url: `${BASE_URL}/predict`,
+//       data: formData,
+//       headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'multipart/form-data',
+//       },
+//       timeout: 60000,
+//       signal: abortControllerRef.current.signal,
+//       onUploadProgress: (progressEvent) => {
+//         if (progressEvent.total) {
+//           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+//           setUploadProgress(percentCompleted);
+//         }
+//       },
+//     });
+
+//     if (response.data && response.data.success) {
+//       setResult({
+//         soilName: response.data.soil_name || response.data.class || 'Unknown',
+//         crops: response.data.crops || [],
+//         soilDescription: response.data.soil_description || '',
+//         advice: response.data.advice || [],
+//         confidence: response.data.confidence || 'N/A'
+//       });
+//       setIsServerReady(true);
+//     }
+
+//   } catch (err) {
+//     console.error('Prediction Error:', err);
+//     setError(err.response?.data?.error || 'Server သို့ ချိတ်ဆက်၍ မရပါ။');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
   return (
     <ImageBackground source={backgroundImage} style={styles.backgroundImage} resizeMode="cover">
