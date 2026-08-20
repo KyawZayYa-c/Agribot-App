@@ -47,7 +47,7 @@ const BottomMetricsBar = ({
   
   const getBatteryDisplayText = () => {
   if (isEspConnected) {
-    return `${Math.round(batteryLevel)}%`;
+    return `100%`;
   } else {
     return '--%';
   }
@@ -154,7 +154,7 @@ const BottomMetricsBar = ({
         style={[
           styles.batteryFillSmall, 
           { 
-            width: isEspConnected ? `${Math.min(batteryLevel, 100)}%` : '0%',  // ✅ ဒါကိုသုံးပါ
+            width: isEspConnected ? `${Math.min(batteryLevel, 100)}%` : '100%',  // ✅ ဒါကိုသုံးပါ
             backgroundColor: getBatteryColor()
           }
         ]} 
