@@ -1,4 +1,3 @@
-// hooks/useCamera.js
 import { useState, useEffect, useRef, useCallback } from 'react';
 import esp32Service from '../services/esp32Service';
 
@@ -25,7 +24,6 @@ export const useCamera = () => {
       
       switch (direction) {
         case 'up':
-          // ⚠️ FIX: up ဆိုရင် pan left သွားရမယ်
           newPan = Math.max(0, panAngle - 10);
           if (newPan !== panAngle) {
             console.log(`📷 Up → Pan left: ${newPan}°`);
@@ -38,7 +36,6 @@ export const useCamera = () => {
           break;
           
         case 'down':
-          // ⚠️ FIX: down ဆိုရင် pan right သွားရမယ်
           newPan = Math.min(180, panAngle + 10);
           if (newPan !== panAngle) {
             console.log(`📷 Down → Pan right: ${newPan}°`);
@@ -51,7 +48,6 @@ export const useCamera = () => {
           break;
           
         case 'left':
-          // ⚠️ FIX: left ဆိုရင် tilt up သွားရမယ်
           newTilt = Math.min(170, tiltAngle + 10);
           if (newTilt !== tiltAngle) {
             console.log(`📷 Left → Tilt up: ${newTilt}°`);
@@ -64,7 +60,6 @@ export const useCamera = () => {
           break;
           
         case 'right':
-          // ⚠️ FIX: right ဆိုရင် tilt down သွားရမယ်
           newTilt = Math.max(10, tiltAngle - 10);
           if (newTilt !== tiltAngle) {
             console.log(`📷 Right → Tilt down: ${newTilt}°`);
@@ -93,7 +88,6 @@ export const useCamera = () => {
     }
   }, [panAngle, tiltAngle]);
 
-  // ===== Get Camera Stream URL =====
   const getStreamUrl = useCallback(async () => {
     try {
       console.log('📷 Getting camera stream URL...');
@@ -117,7 +111,6 @@ export const useCamera = () => {
     }
   }, []);
 
-  // ===== Check Connection =====
   const checkConnection = useCallback(async () => {
     try {
       console.log('🔍 Checking ESP32 connection...');

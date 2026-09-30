@@ -1,5 +1,4 @@
-// screens/ControlScreen.js
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { 
   View, 
   StyleSheet, 
@@ -87,18 +86,6 @@ const ControlScreen = ({ onBack, routeParams = null , onOpenAITest }) => {
   }, [routeParams?.startWork]);
 
   const {
-    autoMode,
-    ploughing,
-    seedDropper,
-    soilCoverer,
-    estimatedTime,
-    toggleAutoMode,
-    togglePloughing,
-    toggleSeedDropper,
-    toggleSoilCoverer,
-  } = useControlState();
-
-  const {
     isVideoLoading,
     videoError,
     isVideoVisible,
@@ -123,55 +110,12 @@ const ControlScreen = ({ onBack, routeParams = null , onOpenAITest }) => {
     emergencyStop,
   } = useCarControl();
 
-//   const handleCapturePhoto = async () => {
-//   if (isCapturing) return;
-//   setIsCapturing(true);
-  
-//   // ✅ Capture mode ကို true လုပ်ပြီး Live Stream ကို ရပ်မယ်
-//   setCaptureMode(true);
-//   console.log('📷 Capture mode: ON - Stream paused');
-
-//   try {
-//     console.log('📸 Capturing photo...');
-    
-//     const result = await firebaseService.capturePhoto('esp32-cam');
-    
-//     console.log('📊 Result:', result);
-    
-//     if (result.success) {
-//       // ✅ ပုံကို သိမ်းပြီး Modal မှာပြမယ်
-//       setCapturedImageUri(result.uri);
-//       setShowImageModal(true);
-      
-//       // ✅ ပုံသိမ်းပြီးရင် Live Stream ကို ပြန် reload လုပ်မယ်
-//       setTimeout(() => {
-//         setCaptureMode(false);
-//         reloadVideo();
-//         console.log('📷 Capture mode: OFF - Stream resumed');
-//       }, 500);
-//     } else {
-//       Alert.alert('Capture Failed', result.error);
-//       setCaptureMode(false);
-//     }
-//   } catch (err) {
-//     console.error('❌ Capture error:', err);
-//     Alert.alert('Error', err.message || 'Something went wrong');
-//     setCaptureMode(false);
-//   } finally {
-//     setIsCapturing(false);
-//   }
-// };
-
-// screens/ControlScreen.js
-
 const handleCapturePhoto = async () => {
   if (isCapturing) return;
   setIsCapturing(true);
   
-  // ✅ ပထမဆုံး AITestScreen ကိုသွားမယ်
   if (onOpenAITest) {
-    // AITestScreen ကိုသွားပြီး loading state ပြဖို့ signal ပို့မယ်
-    onOpenAITest(null);  // null ပို့ပြီး loading ပြခိုင်းမယ်
+    onOpenAITest(null); 
   }
   
   setCaptureMode(true);
@@ -185,12 +129,9 @@ const handleCapturePhoto = async () => {
     console.log('📊 Result:', result);
     
     if (result.success) {
-      // ✅ ပုံရိုက်ပြီးရင် AITestScreen ကို update လုပ်မယ်
-      // (AITestScreen ကို ပြန်ဖွင့်ဖို့မလိုဘူး၊ ပုံ data ကိုပို့မယ်)
-      
-      // AITestScreen ကို ပြန်ခေါ်ပြီး ပုံ data ကိုပို့မယ်
+     
       if (onOpenAITest) {
-        onOpenAITest(result.uri);  // ပုံ data ကိုပို့
+        onOpenAITest(result.uri);  
       }
       
       setTimeout(() => {
@@ -201,9 +142,8 @@ const handleCapturePhoto = async () => {
     } else {
       Alert.alert('Capture Failed', result.error);
       setCaptureMode(false);
-      // AITestScreen ကို ပိတ်မယ်
       if (onOpenAITest) {
-        onOpenAITest('error');  // error signal ပို့
+        onOpenAITest('error'); 
       }
     }
   } catch (err) {
@@ -218,44 +158,12 @@ const handleCapturePhoto = async () => {
   }
 };
 
-  // const fetchESP32Status = useCallback(async () => {
-  //   try {
-  //     console.log('🔍 Fetching ESP32 status...');
-      
-  //     const batteryResult = await esp32Service.getBatteryStatus();
-  //     console.log('📊 Battery result:', batteryResult);
-      
-  //     if (batteryResult.success && batteryResult.data) {
-  //       const percentage = batteryResult.data.percentage || 0;
-  //       setBatteryLevel(percentage);
-  //       console.log(`🔋 Battery: ${percentage}%`);
-  //       console.log(`⚡ Voltage: ${batteryResult.data.voltage || 0}V`);
-  //       console.log(`🔌 Charging: ${batteryResult.data.isCharging ? 'YES' : 'NO'}`);
-  //     } else {
-  //       console.log('❌ Battery data not available:', batteryResult?.error);
-  //     }
-
-  //     const statusResult = await esp32Service.getStatus();
-  //     if (statusResult.success) {
-  //       setIsEspConnected(true);
-  //       console.log('✅ ESP32 Connected');
-  //     } else {
-  //       setIsEspConnected(false);
-  //       console.log('❌ ESP32 Disconnected');
-  //     }
-  //   } catch (error) {
-  //     console.log('❌ Fetch status error:', error.message);
-  //     setIsEspConnected(false);
-  //   }
-  // }, []);
-
-  // screens/ControlScreen.js
 
 const fetchESP32Status = useCallback(async () => {
   try {
     console.log('🔍 Fetching ESP32 status...');
     
-    // ✅ ESP32 Connection ကိုပဲ စစ်ပါ
+    // ✅ ESP32 Connection 
     const statusResult = await esp32Service.getStatus();
     if (statusResult.success) {
       setIsEspConnected(true);
@@ -270,7 +178,6 @@ const fetchESP32Status = useCallback(async () => {
   }
 }, []);
 
-// ✅ useEffect ကို ပြန်ထည့်ပါ
 useEffect(() => {
   fetchESP32Status();
   
@@ -408,60 +315,6 @@ useEffect(() => {
     }
     onBack();
   };
-
-  // ✅ Capture Photo with Modal
-  // const handleCapturePhoto = async () => {
-  //   console.log('📸 Capturing photo...');
-    
-  //   try {
-  //     const result = await firebaseService.capturePhoto('esp32-cam');
-      
-  //     console.log('📊 Result:', result);
-      
-  //     if (result?.success) {
-  //       // ✅ Modal မှာပြဖို့ base64 ကို သိမ်းပါ
-  //       setCapturedImageUri(result.uri);
-  //       setShowImageModal(true);
-  //     } else {
-  //       Alert.alert('❌ Error', result?.error || 'Capture failed');
-  //     }
-  //   } catch (error) {
-  //     console.log('❌ Capture error:', error);
-  //     Alert.alert('❌ Error', error.message || 'Something went wrong');
-  //   }
-  // };
-
-//   const handleCapturePhoto = async () => {
-//   if (isCapturing) return;
-//   setIsCapturing(true);
-
-//   try {
-//     console.log('📸 Capturing photo...');
-    
-//     // ✅ Live Stream ကို ခေတ္တရပ်ဖို့ WebView ကို ပြောမယ်
-//     // (WebView ကို ref နဲ့ ထိန်းထားပြီး reload လုပ်မယ်)
-    
-//     const result = await firebaseService.capturePhoto('esp32-cam');
-    
-//     console.log('📊 Result:', result);
-    
-//     if (result.success) {
-//       // ✅ ပုံကို သိမ်းပြီး Modal မှာပြမယ်
-//       setCapturedImageUri(result.uri);
-//       setShowImageModal(true);
-      
-//       // ✅ ပုံသိမ်းပြီးရင် Live Stream ကို ပြန် reload လုပ်မယ်
-//       // (WebView reload ကို နောက်မှ လုပ်မယ်)
-//     } else {
-//       Alert.alert('Capture Failed', result.error);
-//     }
-//   } catch (err) {
-//     console.error('❌ Capture error:', err);
-//     Alert.alert('Error', err.message || 'Something went wrong');
-//   } finally {
-//     setIsCapturing(false);
-//   }
-// };
 
   const handleTogglePump = async () => {
     const newState = !pumpState;

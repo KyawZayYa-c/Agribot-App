@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Button, Text, Image, ActivityIndicator } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker'; 
 
@@ -8,7 +8,6 @@ export default function PlantScannerScreen() {
   const [loading, setLoading] = useState(false);
 
   const handlePickAndClassify = async () => {
-    // 1. ImagePicker ဖြင့် ဓာတ်ပုံရွေးခြင်း
     const resultPicker = await launchImageLibrary({ mediaType: 'photo' });
     if (resultPicker.didCancel || !resultPicker.assets?.[0]) return;
 
@@ -19,7 +18,6 @@ export default function PlantScannerScreen() {
     setLoading(false);
 
     if (res) {
-      // Backend Controller မှ ပြန်လာသည့် Response (ဥပမာ res.disease သို့မဟုတ် res) ကို ပြပေးခြင်း
       setResult(res.disease || res);
     }
   };

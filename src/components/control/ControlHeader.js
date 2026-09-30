@@ -1,5 +1,3 @@
-// components/control/ControlHeader.js
-import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 

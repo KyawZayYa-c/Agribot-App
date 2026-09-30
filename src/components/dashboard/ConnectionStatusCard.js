@@ -1,5 +1,3 @@
-// components/dashboard/ConnectionStatusCard.js
-import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';

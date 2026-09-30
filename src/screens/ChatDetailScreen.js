@@ -1,5 +1,3 @@
-// screens/ChatDetailScreen.js
-import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -80,18 +78,6 @@ const AITextRenderer = ({ text }) => {
 };
 
 export default function ChatDetailScreen({ chat, onBack }) {
-  // ✅ Debug log
-  useEffect(() => {
-    console.log('📊 ChatDetailScreen mounted');
-    console.log('📊 chat keys:', Object.keys(chat || {}));
-    console.log('📊 chat.image exists:', !!chat?.image);
-    console.log('📊 chat.result exists:', !!chat?.result);
-    if (chat?.result) {
-      console.log('📊 chat.result keys:', Object.keys(chat.result));
-      console.log('📊 chat.result.soil_name:', chat.result.soil_name);
-      console.log('📊 chat.result.crops:', chat.result.crops?.length);
-    }
-  }, [chat]);
 
   if (!chat) {
     return (
@@ -174,7 +160,7 @@ export default function ChatDetailScreen({ chat, onBack }) {
               </View>
             ) : null}
             
-            {/* ✅ Prediction Result - ပိုပြည့်စုံအောင်ပြမယ် */}
+            {/* ✅ Prediction Result */}
             {isPrediction && (
               <View style={styles.resultContainer}>
                 <Text style={styles.resultLabel}>🔬 Detection Result</Text>
@@ -232,7 +218,7 @@ export default function ChatDetailScreen({ chat, onBack }) {
               </View>
             )}
 
-            {/* ✅ Messages - အကုန်လုံးအတွက်ပြမယ် */}
+            {/* ✅ Messages  */}
             {pairs.map((pair, index) => (
               <View key={index} style={styles.conversationPair}>
                 {/* User Message */}

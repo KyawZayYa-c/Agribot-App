@@ -1,4 +1,3 @@
-// services/esp32Service.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEYS = {
@@ -44,29 +43,14 @@ async getSavedCameraIP() {
   }
 }
 
-  //  getCameraStreamURL() {
-  //   if (this.cameraBaseURL) {
-  //     return `${this.cameraBaseURL}/stream`;  // ESP32-CAM stream endpoint
-  //   }
-  //   const savedIP = this.getSavedCameraIP();
-  //   if (savedIP) {
-  //     this.cameraBaseURL = `http://${savedIP}`;
-  //     return `${this.cameraBaseURL}/stream`;
-  //   }
-  //   return null;
-  // }
-
-
 async getCameraStreamURL() {
   console.log('📷 Getting camera stream URL...');
   
-  // 1. class variable မှာ ရှိရင် ပြန်ပေး
   if (this.cameraBaseURL) {
     console.log(`📷 Using existing cameraBaseURL: ${this.cameraBaseURL}`);
     return `${this.cameraBaseURL}/stream`;
   }
   
-  // 2. Saved Camera IP ကို Storage ကနေ ယူပါ
   const savedIP = await this.getSavedCameraIP();
   console.log(`📷 Saved IP from storage: ${savedIP}`);
   
@@ -92,8 +76,6 @@ async getCameraStreamURL() {
   return null;
 }
 
-  
-  
   async getSavedIP() {
     try {
       const ip = await AsyncStorage.getItem(STORAGE_KEYS.ESP_IP);
@@ -107,7 +89,6 @@ async getCameraStreamURL() {
 async setAutoConnect(enabled) {
   await AsyncStorage.setItem(STORAGE_KEYS.AUTO_CONNECT, JSON.stringify(enabled));
   if (!enabled) {
-    // Auto Connect ပိတ်ရင် Connection Check ကိုရပ်
     this.stopConnectionCheck();
   }
   }
@@ -203,7 +184,6 @@ startConnectionCheck() {
     }
     
     this.connectionCheckInterval = setInterval(async () => {
-      // ✅ Auto Connect ပိတ်သွားရင် ရပ်
       const isAutoConnect = await this.getAutoConnect();
       if (!isAutoConnect) {
         this.stopConnectionCheck();
@@ -279,48 +259,6 @@ startConnectionCheck() {
       return { success: false, error: error.message };
     }
   }
-
-  // async getBatteryStatus() {
-  //   if (!this.baseURL) {
-  //     const savedIP = await this.getSavedIP();
-  //     if (savedIP) {
-  //       this.baseURL = `http://${savedIP}`;
-  //       this.ipAddress = savedIP;
-  //     } else {
-  //       return { success: false, error: 'No ESP32 IP configured' };
-  //     }
-  //   }
-
-  //   try {
-  //     console.log(`📡 Fetching battery from: ${this.baseURL}/battery`);
-  //     const response = await fetch(`${this.baseURL}/battery`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       timeout: 3000,
-  //     });
-
-  //     console.log(`📡 Battery response status: ${response.status}`);
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       console.log('✅ Battery data received:', data);
-  //       return { 
-  //         success: true, 
-  //         data: {
-  //           voltage: data.voltage || 0,
-  //           percentage: data.percentage || 0,
-  //           isCharging: data.isCharging || false,
-  //         }
-  //       };
-  //     }
-  //     return { success: false, error: `HTTP ${response.status}` };
-  //   } catch (error) {
-  //     console.error('❌ Get battery error:', error.message);
-  //     return { success: false, error: error.message };
-  //   }
-  // }
 
   async getSystemTest() {
     if (!this.baseURL) {

@@ -1,7 +1,5 @@
-// services/firebaseService.js
 import { db } from '../lib/firebase';
 import * as FileSystem from 'expo-file-system';
-// import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'react-native';
 import esp32Service from './esp32Service'; 
 import { 
@@ -11,7 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let MediaLibrary = null;
 
-// ✅ Web မဟုတ်ရင်မှ import လုပ်ပါ
 if (Platform.OS !== 'web') {
   try {
     MediaLibrary = require('expo-media-library');
@@ -201,8 +198,6 @@ class FirebaseService {
       return { success: false, error: error.message };
     }
   }
-
-  // services/firebaseService.js - အောက်မှာ ထည့်ပါ
 
 // ================= ESP32 COMMAND HISTORY =================
 
@@ -567,89 +562,6 @@ async getESP32CommandHistoryByDate(date) {
   }
 
 
-  // services/firebaseService.js - အောက်ဆုံးမှာ ထည့်ပါ
-
-// ================= CAPTURE PHOTO =================
-
-// ✅ ESP32-CAM ကနေ ပုံရိုက်ပြီး ဖုန်းထဲမှာ သိမ်းမယ်
-// async capturePhoto(deviceId = 'esp32-cam') {
-//   console.log(`📸 Capturing photo from ${deviceId}...`);
-  
-//   try {
-//     // 1. Camera IP ကိုယူပါ
-//     const cameraIP = await esp32Service.getSavedCameraIP();
-//     if (!cameraIP) {
-//       return { success: false, error: 'Camera IP not configured' };
-//     }
-    
-//     console.log(`📷 Camera IP: ${cameraIP}`);
-    
-//     // 2. ESP32-CAM ကို /capture ခေါ်ပါ
-//     const response = await fetch(`http://${cameraIP}/capture`, {
-//       method: 'GET',
-//       timeout: 10000,
-//     });
-    
-//     console.log(`📡 Response status: ${response.status}`);
-    
-//     if (!response.ok) {
-//       return { success: false, error: `HTTP ${response.status}` };
-//     }
-    
-//     // 3. Image data ကို blob အနေနဲ့ယူပါ
-//     const imageBlob = await response.blob();
-//     console.log(`📷 Image size: ${imageBlob.size} bytes`);
-    
-//     // 4. Blob ကို base64 ပြောင်းပါ
-//     const reader = new FileReader();
-//     const base64Data = await new Promise((resolve, reject) => {
-//       reader.onload = () => resolve(reader.result);
-//       reader.onerror = reject;
-//       reader.readAsDataURL(imageBlob);
-//     });
-    
-//     // 5. ဖိုင်နာမည်သတ်မှတ်ပါ
-//     const filename = `capture_${Date.now()}.jpg`;
-//     const fileUri = `${FileSystem.documentDirectory}${filename}`;
-    
-//     // 6. Base64 ကို file အဖြစ်သိမ်းပါ
-//     await FileSystem.writeAsStringAsync(fileUri, base64Data.split(',')[1], {
-//       encoding: FileSystem.EncodingType.Base64,
-//     });
-    
-//     console.log(`✅ Photo saved to: ${fileUri}`);
-    
-//     // 7. Media Library မှာ သိမ်းပါ (Android/iOS)
-//     if (Platform.OS !== 'web') {
-//       try {
-//         const { status } = await MediaLibrary.requestPermissionsAsync();
-//         if (status === 'granted') {
-//           const asset = await MediaLibrary.createAssetAsync(fileUri);
-//           await MediaLibrary.saveToLibraryAsync(asset);
-//           console.log('✅ Photo saved to gallery');
-//         }
-//       } catch (mediaError) {
-//         console.log('⚠️ Media library error:', mediaError.message);
-//       }
-//     }
-    
-//     // 8. Result ပြန်ပေးပါ
-//     return {
-//       success: true,
-//       uri: fileUri,
-//       filename: filename,
-//       base64: base64Data,
-//     };
-    
-//   } catch (error) {
-//     console.error('❌ Capture photo error:', error);
-//     return { success: false, error: error.message };
-//   }
-  // }
-  
-// services/firebaseService.js - capturePhoto ကို ဒီလိုပြင်ပါ
-
-// firebaseService.js
 async capturePhoto(deviceId = 'esp32-cam') {
   try {
     const cameraIP = await esp32Service.getSavedCameraIP();
@@ -672,7 +584,6 @@ async capturePhoto(deviceId = 'esp32-cam') {
       return { success: false, error: `HTTP ${response.status}` };
     }
 
-    // Blob အစား ArrayBuffer ယူပြီး Base64 ပြောင်းခြင်း
     const buffer = await response.arrayBuffer();
     const base64 = bufferToBase64(buffer);
     const base64Uri = `data:image/jpeg;base64,${base64}`;
@@ -688,13 +599,8 @@ async capturePhoto(deviceId = 'esp32-cam') {
   }
 }
 
-// ArrayBuffer to Base64 Helper
-
-
-// ===== GET LATEST PHOTO =====
 async getLatestPhoto(deviceId = 'esp32-cam') {
   try {
-    // Documents directory ထဲက နောက်ဆုံးပုံကိုရှာပါ
     const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
     const photoFiles = files
       .filter(f => f.startsWith('capture_') && f.endsWith('.jpg'))
@@ -735,36 +641,7 @@ async savePhotoToGallery(uri) {
   }
   }
   
-
-  // services/firebaseService.js - အောက်ဆုံးမှာ ထည့်ပါ
-
-// ================= AI PREDICTION HISTORY =================
-
-// ✅ Save AI prediction with image to Firebase
-// async saveAIPrediction(imageBase64, predictionResult) {
-//   try {
-//     const data = {
-//       timestamp: new Date().toISOString(),
-//       image: imageBase64,  // base64 image data
-//       result: predictionResult,
-//       deviceId: 'esp32_robot_001',
-//     };
-    
-//     const docRef = await addDoc(collection(db, 'ai_predictions'), data);
-//     console.log('✅ AI prediction saved to Firebase with ID:', docRef.id);
-//     return { success: true, id: docRef.id };
-//   } catch (error) {
-//     console.error('❌ Error saving AI prediction:', error);
-//     return { success: false, error: error.message };
-//   }
-// }
-
-  // firebaseService.js - saveAIPrediction ကို ဒီလိုထပ်ထည့်ပါ
 async saveAIPrediction(imageBase64, predictionResult) {
-  console.log('📤 saveAIPrediction called');
-  console.log('📷 imageBase64 type:', typeof imageBase64);
-  console.log('📷 imageBase64 length:', imageBase64?.length);
-  console.log('📊 predictionResult:', predictionResult);
   
   try {
     const data = {
@@ -784,7 +661,6 @@ async saveAIPrediction(imageBase64, predictionResult) {
   }
 }
   
-// ✅ Get all AI prediction history
 async getAIPredictionHistory(limitCount = 50) {
   try {
     const q = query(
@@ -806,7 +682,6 @@ async getAIPredictionHistory(limitCount = 50) {
   }
 }
 
-// ✅ Delete AI prediction by ID
 async deleteAIPrediction(id) {
   try {
     await deleteDoc(doc(db, 'ai_predictions', id));
@@ -818,16 +693,11 @@ async deleteAIPrediction(id) {
   }
   }
   
-  // services/firebaseService.js - အောက်ဆုံးမှာ ထည့်ပါ
-
-// ================= AI PREDICTION HISTORY =================
-
-// ✅ Save AI prediction with image to Firebase
 async saveAIPrediction(imageBase64, predictionResult) {
   try {
     const data = {
       timestamp: new Date().toISOString(),
-      image: imageBase64,  // base64 image data
+      image: imageBase64,  
       result: predictionResult,
       deviceId: 'esp32_robot_001',
     };
@@ -841,7 +711,6 @@ async saveAIPrediction(imageBase64, predictionResult) {
   }
 }
 
-// ✅ Get all AI prediction history
 async getAIPredictionHistory(limitCount = 50) {
   try {
     const q = query(
@@ -863,7 +732,6 @@ async getAIPredictionHistory(limitCount = 50) {
   }
 }
 
-// ✅ Delete AI prediction by ID
 async deleteAIPrediction(id) {
   try {
     await deleteDoc(doc(db, 'ai_predictions', id));

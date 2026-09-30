@@ -1,4 +1,3 @@
-// hooks/useCarControl.js
 import { useState, useCallback } from 'react';
 import esp32Service from '../services/esp32Service';
 
@@ -8,7 +7,6 @@ export const useCarControl = () => {
   const [lastResponse, setLastResponse] = useState(null);
   const [error, setError] = useState(null);
 
-  // Send command with logging
   const sendCarCommand = useCallback(async (commandFn, commandName, params = null) => {
     setIsSending(true);
     setError(null);
@@ -17,7 +15,6 @@ export const useCarControl = () => {
     console.log(`🎮 Car Command: ${commandName}`, params || '');
 
     try {
-      // ✅ ESP32 Service ကို သုံးပါ
       const result = await commandFn();
       console.log(`📊 Result:`, result);
       
@@ -37,7 +34,6 @@ export const useCarControl = () => {
     }
   }, []);
 
-  // Individual car commands
   const moveForward = useCallback(() => {
     return sendCarCommand(
       () => esp32Service.moveForward(),

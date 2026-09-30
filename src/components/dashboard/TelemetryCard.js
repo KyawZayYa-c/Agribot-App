@@ -1,12 +1,9 @@
-// components/dashboard/TelemetryCard.js
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, ProgressBar } from 'react-native-paper';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const TelemetryCard = ({ telemetry, todayWorkTime }) => {
-  
-  // ✅ Firebase ကနေပြန်လာတာကို Console Log နဲ့ပြ
   useEffect(() => {
     if (todayWorkTime) {
       console.log('📊 TelemetryCard received todayWorkTime:', todayWorkTime);

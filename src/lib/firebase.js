@@ -1,10 +1,8 @@
-// lib/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';  
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCfK_FA0_31IQTMXD2ou5GtuxD5eOK19iM",
   authDomain: "agribot-4f1c4.firebaseapp.com",

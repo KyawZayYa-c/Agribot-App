@@ -11,9 +11,8 @@ export const stopRobot = () => callESP('/s');
 // Drive Speed (0 - 255)
 export const setDriveSpeed = (speed) => callESP(`/api?ds=${speed}`);
 
-
 // ================= 2. PUMP CONTROL =================
-// status: 1 (ON) သို့မဟုတ် 0 (OFF)
+// status: 1 (ON)  0 (OFF)
 export const setPumpState = (status) => callESP(`/api?pump=${status}`);
 
 

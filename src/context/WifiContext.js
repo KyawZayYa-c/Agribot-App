@@ -1,4 +1,3 @@
-// context/WifiContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import wifiService from '../services/wifiService';
 import esp32Service from '../services/esp32Service';

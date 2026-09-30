@@ -165,8 +165,8 @@ class WifiService {
   async scanAllRanges() {
     const ranges = [
       '10.143.201.',
-      '10.11.128.',   // First - ခင်ဗျားရဲ့ IP range
-      '10.248.244.',  // Second IP range
+      '10.11.128.',   
+      '10.248.244.',  
       '10.11.0.',
       '10.10.0.',
       '10.0.0.',
@@ -181,7 +181,6 @@ class WifiService {
     const found = [];
 
     for (const baseIP of ranges) {
-      // ✅ တွေ့ပြီးသားဆိုရင် ချက်ချင်းရပ်
       if (found.length > 0) {
         console.log(`✅ Found ${found.length} device(s), stopping scan immediately!`);
         break;
@@ -225,7 +224,6 @@ class WifiService {
       
       console.log(`📶 Range ${baseIP} complete. Found ${foundCount} device(s)`);
       
-      // ✅ တွေ့ပြီးသားဆိုရင် ချက်ချင်းရပ်
       if (found.length > 0) {
         console.log(`✅ Found ${found.length} device(s), stopping scan immediately!`);
         break;

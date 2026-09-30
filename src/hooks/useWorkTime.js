@@ -1,4 +1,3 @@
-// hooks/useWorkTime.js
 import { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

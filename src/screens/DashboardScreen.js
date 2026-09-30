@@ -1,5 +1,3 @@
-// screens/DashboardScreen.js
-import React from 'react';
 import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { Text, Button, ActivityIndicator } from 'react-native-paper';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';

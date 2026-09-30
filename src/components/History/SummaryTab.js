@@ -1,5 +1,3 @@
-// components/History/SummaryTab.js
-import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +6,6 @@ export default function SummaryTab({ chatHistory = [], esp32History = [], today 
   const totalSessions = chatHistory.length;
   const totalCommands = esp32History.length;
   
-  // Count work sessions
   const workSessions = esp32History.filter(item => item.command === 'work_session');
   const totalWorkTime = workSessions.reduce((acc, item) => {
     return acc + (item.params?.duration || 0);

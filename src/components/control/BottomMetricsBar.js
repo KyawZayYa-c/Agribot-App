@@ -1,5 +1,3 @@
-// components/control/BottomMetricsBar.js
-import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -31,9 +29,9 @@ const BottomMetricsBar = ({
   // ✅ Get battery color based on level
   const getBatteryColor = () => {
   if (isEspConnected) {
-    return '#4CAF50';  // 🟢 Connect ဖြစ်ရင် အစိမ်း
+    return '#4CAF50';  
   } else {
-    return '#f44336';  // 🔴 Connect မဖြစ်ရင် အနီ
+    return '#f44336'; 
   }
   };
   
@@ -55,35 +53,33 @@ const BottomMetricsBar = ({
 
   return (
     <View style={styles.bottomMetricsRow}>
-      {/* Work Time */}
-      {/* Work Time */}
-<TouchableOpacity 
-  style={styles.bottomMetricCard}
-  onPress={onToggleWorkTime}
-  activeOpacity={0.7}
->
-  <Ionicons 
-    name="time-outline" 
-    size={24} 
-    color={isWorkRunning ? '#FF9800' : '#8BC34A'} 
-  />
-  <View style={styles.bottomMetricTexts}>
-    <View style={styles.workTimeHeader}>
-      <Text style={styles.bottomMetricLabel}>Work Time</Text>
-      <View style={styles.workTimeToggle}>
-        <Text style={[styles.workTimeToggleText, { color: isWorkRunning ? '#FF9800' : '#8BC34A' }]}>
-          {isWorkRunning ? '⏹' : '▶'}
-        </Text>
+    <TouchableOpacity 
+      style={styles.bottomMetricCard}
+      onPress={onToggleWorkTime}
+      activeOpacity={0.7}
+    >
+      <Ionicons 
+        name="time-outline" 
+        size={24} 
+        color={isWorkRunning ? '#FF9800' : '#8BC34A'} 
+      />
+      <View style={styles.bottomMetricTexts}>
+        <View style={styles.workTimeHeader}>
+          <Text style={styles.bottomMetricLabel}>Work Time</Text>
+          <View style={styles.workTimeToggle}>
+            <Text style={[styles.workTimeToggleText, { color: isWorkRunning ? '#FF9800' : '#8BC34A' }]}>
+              {isWorkRunning ? '⏹' : '▶'}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.workTimeRow}>
+          <View style={[styles.workIndicator, isWorkRunning ? styles.workActive : styles.workInactive]} />
+          <Text style={[styles.bottomMetricValue, { color: isWorkRunning ? '#FF9800' : '#FFFFFF' }]}>
+            {workTime}
+          </Text>
+        </View>
       </View>
-    </View>
-    <View style={styles.workTimeRow}>
-      <View style={[styles.workIndicator, isWorkRunning ? styles.workActive : styles.workInactive]} />
-      <Text style={[styles.bottomMetricValue, { color: isWorkRunning ? '#FF9800' : '#FFFFFF' }]}>
-        {workTime}
-      </Text>
-    </View>
-  </View>
-</TouchableOpacity>
+    </TouchableOpacity>
 
       {/* Signal */}
       <View style={styles.bottomMetricCard}>
@@ -114,38 +110,12 @@ const BottomMetricsBar = ({
         </View>
       </View>
 
-      {/* Battery */}
-      {/* <View style={styles.bottomMetricCard}>
-       <MaterialCommunityIcons 
-  name={batteryLevel > 20 ? "battery" : "battery-alert"} 
-  size={24} 
-  color={getBatteryColor(batteryLevel)} 
-/>
-        <View style={styles.bottomMetricTexts}>
-          <Text style={styles.bottomMetricLabel}>Battery</Text>
-          <View style={styles.batteryContainerSmall}>
-            <View 
-              style={[
-                styles.batteryFillSmall, 
-                { 
-                  width: `${Math.min(batteryLevel, 100)}%`,
-                  backgroundColor: getBatteryColor(batteryLevel)
-                }
-              ]} 
-            />
-          </View>
-          <Text style={[styles.bottomMetricValue, { color: getBatteryColor(batteryLevel), fontSize: 14 }]}>
-            {Math.round(batteryLevel)}%
-          </Text>
-        </View>
-      </View> */}
-
-      {/* Battery */}
+     
 <View style={styles.bottomMetricCard}>
   <MaterialCommunityIcons 
-    name={getBatteryIconName()}   // ✅ ဒါကိုသုံးပါ
+    name={getBatteryIconName()} 
     size={24} 
-    color={getBatteryColor()}    // ✅ parameter မပါဘူး
+    color={getBatteryColor()} 
   />
   <View style={styles.bottomMetricTexts}>
     <Text style={styles.bottomMetricLabel}>Battery</Text>
@@ -154,7 +124,7 @@ const BottomMetricsBar = ({
         style={[
           styles.batteryFillSmall, 
           { 
-            width: isEspConnected ? `${Math.min(batteryLevel, 100)}%` : '100%',  // ✅ ဒါကိုသုံးပါ
+            width: isEspConnected ? `${Math.min(batteryLevel, 100)}%` : '100%', 
             backgroundColor: getBatteryColor()
           }
         ]} 

@@ -1,9 +1,6 @@
-// services/geminiProxyService.js
-
 const PROXY_URL = 'https://gemini-proxy-server-0ekj.onrender.com/api/gemini-proxy';
 const HEALTH_URL = 'https://gemini-proxy-server-0ekj.onrender.com/health';
 
-// ===== CHECK GEMINI HEALTH (with timeout) =====
 export const checkGeminiHealth = async () => {
   try {
     console.log('🔍 Checking Gemini server health...');
@@ -40,7 +37,6 @@ export const checkGeminiHealth = async () => {
   }
 };
 
-// ===== CALL GEMINI PROXY (with timeout & better error handling) =====
 export const callGeminiProxy = async (message, feature = 'general', sessionId = null) => {
   try {
     console.log(`📤 Sending to Gemini Proxy: ${message.substring(0, 50)}...`);
@@ -122,7 +118,6 @@ export const callGeminiProxy = async (message, feature = 'general', sessionId = 
       };
     }
     
-    // ✅ Handle other errors gracefully
     console.error('❌ Gemini Proxy error:', error.message);
     return {
       success: false,
@@ -132,7 +127,6 @@ export const callGeminiProxy = async (message, feature = 'general', sessionId = 
   }
 };
 
-// ===== SEND MESSAGE WITH RETRY =====
 export const sendMessageWithRetry = async (message, feature = 'general', sessionId = null, maxRetries = 2) => {
   let lastError = null;
   
@@ -147,7 +141,6 @@ export const sendMessageWithRetry = async (message, feature = 'general', session
     
     lastError = result.error;
     
-    // ✅ Don't retry on timeout or network errors
     if (lastError === 'Timeout' || lastError === 'Network error') {
       console.log(`⏹️ Stopping retry due to ${lastError}`);
       break;
@@ -160,7 +153,6 @@ export const sendMessageWithRetry = async (message, feature = 'general', session
     }
   }
   
-  // ✅ Always return a user-friendly message, never throw
   return {
     success: false,
     reply: 'AI ဝန်ဆောင်မှုကို အကြိမ်ကြိမ် ချိတ်ဆက်လို့မရပါ။ ကျေးဇူးပြု၍ နောက်မှထပ်ကြိုးစားပါ။',

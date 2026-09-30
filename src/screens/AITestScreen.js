@@ -1,4 +1,3 @@
-// src/screens/AITestScreen.js
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ActivityIndicator, TouchableOpacity, Image, ScrollView, Platform, Alert, ImageBackground } from 'react-native';
 import { Text, Button, Card } from 'react-native-paper';
@@ -21,7 +20,6 @@ export default function AITestScreen({ onBack, initialImage = null }) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const abortControllerRef = useRef(null);
 
-  // Screen စတင်ပွင့်သည်နှင့် OnRender Server Sleep Mode ကို နှိုးခြင်း (Ping Request)
   useEffect(() => {
     let isMounted = true;
 
@@ -47,7 +45,6 @@ export default function AITestScreen({ onBack, initialImage = null }) {
     };
   }, []);
 
-  // ✅ initialImage ပြောင်းတိုင်း detect လုပ်မယ်
   useEffect(() => {
     if (initialImage === null) {
       setIsCapturing(true);
@@ -70,7 +67,6 @@ export default function AITestScreen({ onBack, initialImage = null }) {
     }
   }, [initialImage]);
 
-  // Gallery မှ ပုံရွေးချယ်ခြင်း
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -99,7 +95,6 @@ export default function AITestScreen({ onBack, initialImage = null }) {
     }
   };
 
-  // Camera ဖြင့် ဓာတ်ပုံရိုက်ခြင်း
   const takePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
@@ -164,74 +159,33 @@ export default function AITestScreen({ onBack, initialImage = null }) {
           reader.readAsDataURL(fileOrUri);
         });
       } 
-      // ✅ Mobile အတွက် - URI ကို သုံးပါ
-      // else if (typeof fileOrUri === 'string') {
-      //   // ✅ base64 data URI ဖြစ်နေရင်
-      //   if (fileOrUri.startsWith('data:image')) {
-      //     console.log('📤 Mobile: Uploading from base64 data');
-      //     imageBase64 = fileOrUri;
-          
-      //     const response = await fetch(fileOrUri);
-      //     const blob = await response.blob();
-      //     const filename = `capture_${Date.now()}.jpg`;
-      //     const file = new File([blob], filename, { type: 'image/jpeg' });
-      //     formData.append('image', file, filename);
-      //   } else {
-      //     // ✅ ပုံမှန် URI
-      //     const filename = fileOrUri.split('/').pop() || 'photo.jpg';
-      //     const match = /\.(\w+)$/.exec(filename);
-      //     const type = match ? `image/${match[1]}` : 'image/jpeg';
-
-      //     console.log('📤 Mobile: Uploading from URI:', filename);
-      //     formData.append('image', {
-      //       uri: fileOrUri,
-      //       name: filename,
-      //       type: type,
-      //     });
-
-      //     // ✅ URI ကနေ base64 ပြောင်းပါ
-      //     try {
-      //       const response = await fetch(fileOrUri);
-      //       const blob = await response.blob();
-      //       const reader = new FileReader();
-      //       imageBase64 = await new Promise((resolve) => {
-      //         reader.onload = () => resolve(reader.result);
-      //         reader.readAsDataURL(blob);
-      //       });
-      //       console.log('✅ Image converted to base64 for Firebase');
-      //     } catch (err) {
-      //       console.log('⚠️ Could not convert to base64, skipping Firebase save');
-      //     }
-      //   }
      
-      // } 
-      // ❌ ဒီအပိုင်းကိုရှာပါ
-else if (typeof fileOrUri === 'string') {
-  const filename = fileOrUri.split('/').pop() || 'photo.jpg';
-  const match = /\.(\w+)$/.exec(filename);
-  const type = match ? `image/${match[1]}` : 'image/jpeg';
+      else if (typeof fileOrUri === 'string') {
+        const filename = fileOrUri.split('/').pop() || 'photo.jpg';
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-  console.log('📤 Mobile: Uploading from URI:', filename);
-  formData.append('image', {
-    uri: fileOrUri,
-    name: filename,
-    type: type,
-  });
+        console.log('📤 Mobile: Uploading from URI:', filename);
+        formData.append('image', {
+          uri: fileOrUri,
+          name: filename,
+          type: type,
+        });
 
-  // ✅ Mobile အတွက် base64 ပြောင်းပါ (URI ကနေ)
-  try {
-    const response = await fetch(fileOrUri);
-    const blob = await response.blob();
-    const reader = new FileReader();
-    imageBase64 = await new Promise((resolve) => {
-      reader.onload = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
-    });
-    console.log('✅ Image converted to base64 for Firebase');
-  } catch (err) {
-    console.log('⚠️ Could not convert to base64, skipping Firebase save');
-  }
-}
+        // ✅ Mobile အတွက် base64 ပြောင်းပါ (URI ကနေ)
+        try {
+          const response = await fetch(fileOrUri);
+          const blob = await response.blob();
+          const reader = new FileReader();
+          imageBase64 = await new Promise((resolve) => {
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+          console.log('✅ Image converted to base64 for Firebase');
+        } catch (err) {
+          console.log('⚠️ Could not convert to base64, skipping Firebase save');
+        }
+      }
       else {
         throw new Error('Unsupported file format');
       }
@@ -258,21 +212,14 @@ else if (typeof fileOrUri === 'string') {
       console.log('📡 Response status:', response.status);
       console.log('📡 Response data:', response.data);
 
-      // ✅ Response data ကို စစ်ဆေးပြီး setResult လုပ်မယ်
       const responseData = response.data;
       
-      // ✅ API က ပြန်လာတဲ့ data ကို သိမ်းမယ်
       if (responseData) {
         setResult({
-          // ✅ soil_name ကို မြန်မာလိုပြမယ်
           soilName: responseData.soil_name || responseData.class || 'Unknown',
-          // ✅ crops စာရင်း
           crops: responseData.crops || [],
-          // ✅ soil description
           soilDescription: responseData.soil_description || '',
-          // ✅ advice စာရင်း
           advice: responseData.advice || [],
-          // ✅ confidence (ရှိရင်)
           confidence: responseData.confidence || 'N/A'
         });
         setIsServerReady(true);
@@ -280,7 +227,6 @@ else if (typeof fileOrUri === 'string') {
         throw new Error('No data received from server');
       }
 
-      // ✅ ပုံနဲ့အဖြေကို Firebase မှာ သိမ်းမယ် (base64 ရှိမှသာ)
       if (imageBase64) {
         console.log('💾 Saving prediction to Firebase...');
         const saveResult = await firebaseService.saveAIPrediction(
@@ -321,72 +267,6 @@ else if (typeof fileOrUri === 'string') {
     }
   };
   
-  // uploadAndPredict Function အတွင်း ပြင်ဆင်ရန်
-// const uploadAndPredict = async (fileOrUri) => {
-//   abortControllerRef.current = new AbortController();
-  
-//   setLoading(true);
-//   setResult(null);
-//   setError(null);
-//   setUploadProgress(0);
-
-//   try {
-//     const formData = new FormData();
-
-//     // ✅ Web Platform အတွက်
-//     if (Platform.OS === 'web' && fileOrUri instanceof File) {
-//       formData.append('image', fileOrUri, fileOrUri.name);
-//     } 
-//     // ✅ Mobile (Android/iOS) အတွက်
-//     else if (typeof fileOrUri === 'string') {
-//       const filename = fileOrUri.split('/').pop() || `photo_${Date.now()}.jpg`;
-//       const match = /\.(\w+)$/.exec(filename);
-//       const type = match ? `image/${match[1]}` : 'image/jpeg';
-
-//       formData.append('image', {
-//         uri: fileOrUri,
-//         name: filename,
-//         type: type,
-//       });
-//     }
-
-//     // Axios Request
-//     const response = await axios({
-//       method: 'POST',
-//       url: `${BASE_URL}/predict`,
-//       data: formData,
-//       headers: {
-//         'Accept': 'application/json',
-//         'Content-Type': 'multipart/form-data',
-//       },
-//       timeout: 60000,
-//       signal: abortControllerRef.current.signal,
-//       onUploadProgress: (progressEvent) => {
-//         if (progressEvent.total) {
-//           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-//           setUploadProgress(percentCompleted);
-//         }
-//       },
-//     });
-
-//     if (response.data && response.data.success) {
-//       setResult({
-//         soilName: response.data.soil_name || response.data.class || 'Unknown',
-//         crops: response.data.crops || [],
-//         soilDescription: response.data.soil_description || '',
-//         advice: response.data.advice || [],
-//         confidence: response.data.confidence || 'N/A'
-//       });
-//       setIsServerReady(true);
-//     }
-
-//   } catch (err) {
-//     console.error('Prediction Error:', err);
-//     setError(err.response?.data?.error || 'Server သို့ ချိတ်ဆက်၍ မရပါ။');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 
   return (
     <ImageBackground source={backgroundImage} style={styles.backgroundImage} resizeMode="cover">

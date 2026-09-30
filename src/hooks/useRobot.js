@@ -1,4 +1,3 @@
-// hooks/useRobot.js
 import { useState, useEffect, useCallback } from 'react';
 import esp32Service from '../services/esp32Service';
 import firebaseService from '../services/firebaseService';
@@ -14,12 +13,10 @@ export const useRobot = () => {
   const [lastCommand, setLastCommand] = useState(null);
   const [error, setError] = useState(null);
 
-  // Initialize connection
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
       
-      // Initialize Firebase
       await firebaseService.initialize();
       
       // Start session

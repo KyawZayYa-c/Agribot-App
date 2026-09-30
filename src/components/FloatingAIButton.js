@@ -1,5 +1,3 @@
-// components/FloatingAIButton.js
-import React from 'react';
 import { StyleSheet, TouchableOpacity, Image, View } from 'react-native';
 import { checkGeminiHealth } from '../services/geminiProxyService';
 
@@ -8,18 +6,13 @@ export default function FloatingAIButton({ onPress }) {
   const handlePress = async () => {
     console.log('🤖 AI Button pressed...');
     
-    // ✅ 1. Health Check ကို Background မှာခေါ် (Server ကိုနှိုး)
-    //    ဒါက Promise ဖြစ်ပေမယ့် await မလုပ်ဘူး (Block မဖြစ်စေရန်)
     checkGeminiHealth().then(isHealthy => {
       console.log(`📊 Server health: ${isHealthy ? '✅ OK' : '⚠️ Waking up...'}`);
     }).catch(() => {
       console.log('⚠️ Health check failed, but continuing...');
     });
-    
-    // ✅ 2. AIChatScreen ကို တန်းသွား (sessionId = null)
-    //    Session ID ကို AIChatScreen က ပထမဆုံးမေးခွန်းမှ ဖန်တီးမယ်
     if (onPress) {
-      onPress(null); // sessionId = null
+      onPress(null); 
     }
   };
 

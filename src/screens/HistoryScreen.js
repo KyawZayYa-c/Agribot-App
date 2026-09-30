@@ -1,5 +1,4 @@
-// screens/HistoryScreen.js
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -133,15 +132,8 @@ export default function HistoryScreen({ onChatPress }) {
     day: 'numeric',
   });
 
-  // const handleChatPress = (chat) => {
-  //   if (onChatPress) {
-  //     onChatPress(chat);
-  //   }
-  // };
-
   const handleChatPress = (chat) => {
   if (onChatPress) {
-    // ✅ Prediction data ပါရင် ပုံပါအောင်ပို့
     if (chat.result && chat.image) {
       onChatPress({
         ...chat,
@@ -162,7 +154,6 @@ export default function HistoryScreen({ onChatPress }) {
         resizeMode="cover"
       >
         <View style={styles.overlayLayer}>
-          {/* ✅ ScrollView ကိုဖယ်ပြီး View နဲ့ အစားထိုးပါ */}
           <View style={styles.scrollContent}>
             <Text style={styles.pageTitle}>📊 Analytics & History</Text>
 
@@ -207,7 +198,7 @@ const styles = StyleSheet.create({
   backgroundImage: { flex: 1, width: '100%' },
   overlayLayer: { flex: 1 },
   scrollContent: {
-    flex: 1,  // ✅ flex: 1 ထည့်ပါ
+    flex: 1, 
     paddingHorizontal: 16,
     paddingTop: 50,
     paddingBottom: 90,

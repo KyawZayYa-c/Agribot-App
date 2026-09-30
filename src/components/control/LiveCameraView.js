@@ -1,5 +1,3 @@
-// components/control/LiveCameraView.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -12,25 +10,21 @@ const LiveCameraView = ({
   onReload,
   isLoading,
   hasError,
-  captureMode = false,  // ✅ ထည့်ပါ
+  captureMode = false,  
 }) => {
   const [webViewKey, setWebViewKey] = useState(0);
-  const webViewRef = useRef(null);  // ✅ WebView ref ထည့်ပါ
+  const webViewRef = useRef(null);  
 
-  // ✅ Stream URL ပြောင်းတဲ့အခါ WebView ကို refresh လုပ်ဖို့
   useEffect(() => {
     if (videoStreamUrl) {
       setWebViewKey(prev => prev + 1);
     }
   }, [videoStreamUrl]);
 
-  // ✅ Capture mode ပြောင်းတဲ့အခါ WebView ကို pause/resume လုပ်ဖို့
   useEffect(() => {
     if (captureMode) {
-      // Capture လုပ်နေချိန် WebView ကို ရပ်ထားမယ်
       console.log('📷 Capture mode: WebView paused');
     } else {
-      // Capture ပြီးရင် WebView ကို ပြန် run မယ်
       console.log('📷 Capture mode: WebView resumed');
     }
   }, [captureMode]);
@@ -211,9 +205,6 @@ const LiveCameraView = ({
     </View>
   );
 };
-
-// ... styles အတိုင်းထားပါ ...
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

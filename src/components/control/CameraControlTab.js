@@ -1,4 +1,3 @@
-// components/control/CameraControlTab.js
 import React, { useRef } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +9,6 @@ const CameraControlTab = ({
   captureDisabled = false,
   panAngle = 90,
   tiltAngle = 90,
-  captureMode = false,
 }) => {
   const intervalRef = useRef(null);
 

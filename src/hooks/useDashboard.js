@@ -1,4 +1,3 @@
-// hooks/useDashboard.js
 import { useState, useEffect, useCallback, useRef } from 'react';
 import esp32Service from '../services/esp32Service';
 import firebaseService from '../services/firebaseService';

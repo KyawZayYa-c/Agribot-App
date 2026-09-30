@@ -1,5 +1,3 @@
-// components/dashboard/SoilDetectionCard.js
-import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Card, Text, ActivityIndicator } from 'react-native-paper';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
